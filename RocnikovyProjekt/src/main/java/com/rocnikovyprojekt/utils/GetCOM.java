@@ -2,28 +2,43 @@ package com.rocnikovyprojekt.utils;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+import java.util.logging.Logger;
+
+/** Get all available COM ports. */
 public class GetCOM {
+    private static final Logger logger = Logger.getLogger(GetCOM.class.getName());
     private static String[][] allPorts;
 
     /**
-     * Get all available COM ports.
+     * Constructor. Load all available COM ports into allPorts.
      */
-    public static void getCOM() {
+    public GetCOM() {
         allPorts = getUnixCOM();
     }
 
-    public static boolean CheckForPorts() {
+    /**
+     * Check if there are any available COM ports.
+     * @return true if there are any available COM ports, false otherwise
+     */
+    public boolean CheckForPorts() {
         if (allPorts == null) {
-            System.out.println("No ports found.");
-            System.out.println("Please refresh the list of ports.");
+            logger.warning("No ports found. \nPlease refresh the list of ports.");
             return false;
         } return true;
     }
 
-    public static String[][] getPorts() {
+    /**
+     * Get all available, already loaded, COM ports.
+     * @return all available COM ports
+     */
+    public String[][] getPorts() {
         return allPorts;
     }
 
+    /**
+     * Get all available COM ports on Unix systems.
+     * @return all available COM ports
+     */
     private static String[][] getUnixCOM() {
         SerialPort[] ports = SerialPort.getCommPorts();
         String[][] allPorts = new String[][]{new String[ports.length]};
@@ -34,7 +49,7 @@ public class GetCOM {
             allPorts[i++] = portInfo;
         }
         for (String[] p : allPorts) {
-            System.out.println("Port info: " + p[0] + ", " + p[1] + ", " + p[2]);
+            logger.info("Port: " + p[0] + " (" + p[1] + ", " + p[2] + ")");
         }
 
         return allPorts;
