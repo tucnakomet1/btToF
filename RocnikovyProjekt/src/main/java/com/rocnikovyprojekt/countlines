@@ -1,0 +1,14 @@
+#!/bin/bash
+
+count_lines() {
+    find "$1" -type f -exec wc -l {} + | awk '{sum += $1} END {print sum}'
+}
+
+tof_lines=$(count_lines "tof")
+util_lines=$(count_lines "utils")
+main_lines=$(wc -l Main.java | awk '{sum += $1} END {print sum}')
+
+total_lines=$((tof_lines + util_lines + main_lines))
+
+echo "Celkový počet řádků: $total_lines"
+

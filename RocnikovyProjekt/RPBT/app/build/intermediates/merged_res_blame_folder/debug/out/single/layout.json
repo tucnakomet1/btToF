@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/content_main.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/content_main.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/fragment_second.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/fragment_second.xml"
+    },
+    {
+        "merged": "com.main.rpbt.app-mergeDebugResources-62:/layout/fragment_first.xml",
+        "source": "com.main.rpbt.app-main-65:/layout/fragment_first.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/bluetooth.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/bluetooth.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/activity_main.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/bitmap.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/bitmap.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-mergeDebugResources-62:/layout/fragment_first.xml",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/fragment_first.xml"
+    }
+]
