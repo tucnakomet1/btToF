@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="5dp"
+    app:circularflow_radiusInDP="50dp"
+    android:elevation="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgViewCard"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/file"
+            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal"
+            android:layout_toEndOf="@+id/imgViewCard">
+
+            <TextView
+                android:id="@+id/camera_player_file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginTop="25dp"
+                android:text="@string/file_name" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                android:layout_gravity="end">
+
+                <TextView
+                    android:id="@+id/camera_player_file_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/_179_0kib" />
+
+                <TextView
+                    android:id="@+id/camera_player_file_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="22:59 Středa\n28. 08. 2024"
+                    android:textColor="#797979"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>
