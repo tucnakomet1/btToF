@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BluetoothFragment"
-    android:padding="16dp">
+    tools:context=".BluetoothFragment">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -15,24 +14,63 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/header"
+            android:id="@+id/header_first"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:fontFamily="sans-serif"
-            android:text="Bluetooth připojení"
+            android:text="@string/bluetooth"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/SearchButton"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/cardview_dark_background"
-            android:clickable="true"
-            android:onClick="onButtonClickSearch"
-            android:text="Vyhledat" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif"
+            android:text="@string/paired_devices"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/device_name"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/device_mac_address"/>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listViewDevices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="5"
+            android:layout_margin="10dp"
+            android:backgroundTint="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/SearchButton"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:backgroundTint="#b0b0b0"
+            android:text="@string/scan_devices" />
 
         <TextView
             android:id="@+id/textView"
@@ -41,45 +79,17 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="sans-serif"
-            android:text="Připojené zařízení"
-            android:textAlignment="center"
-            android:textSize="16sp" />
+            android:text="@string/connected_device"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textAlignment="center" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/nameLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/cardview_dark_background"
-                android:fontFamily="sans-serif"
-                android:text="Jméno:"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/macLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif"
-                android:text="MAC adresa:"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
 
             <TextView
                 android:id="@+id/devsText"
@@ -100,27 +110,21 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/sendPingButton"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:backgroundTint="@color/cardview_dark_background"
-            android:text="Připojit se" />
-
-        <Button
-            android:id="@+id/button6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/cardview_dark_background"
-            android:text="Refresh" />
-
-
+            android:textColor="@color/black"
+            android:backgroundTint="#b0b0b0"
+            android:text="@string/send_ping" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        tools:layout_editor_absoluteX="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout">
 
         <Space
@@ -132,8 +136,9 @@
             android:id="@+id/ButtonPrev"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/cardview_dark_background"
-            android:text="Zpět" />
+            android:backgroundTint="#b0b0b0"
+            android:textColor="@color/black"
+            android:text="@string/back" />
 
         <Space
             android:layout_width="wrap_content"
@@ -144,8 +149,9 @@
             android:id="@+id/ButtonNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/cardview_dark_background"
-            android:text="Dále" />
+            android:backgroundTint="#b0b0b0"
+            android:textColor="@color/black"
+            android:text="@string/next_page" />
 
         <Space
             android:layout_width="wrap_content"

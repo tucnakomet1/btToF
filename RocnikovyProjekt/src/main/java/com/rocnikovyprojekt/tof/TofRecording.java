@@ -77,7 +77,8 @@ public class TofRecording {
             List<TofFrame> rec = new ArrayList<>();
             for (int i = 0; i < recordingJson.length(); i++) {
                 String item = recordingJson.getString(i);
-                TofFrame frame = TofFrame.deserialize(item, (int) metadata.get("config.num_targets"));
+                TofFrame frame = TofFrame.deserialize(item);
+
                 rec.add(frame);
             }
             recording = rec;
@@ -109,7 +110,7 @@ public class TofRecording {
             set_metadata((JSONObject) metadataJson.keySet());
 
         set_metadata(
-                (float) metadataJson.get("timestamp"),
+                (long) metadataJson.get("timestamp"),
                 (String) metadataJson.get("description"),
                 (String) metadataJson.get("environment"),
                 (String) metadataJson.get("sensor_type"),
@@ -124,12 +125,12 @@ public class TofRecording {
      * @param map map with metadata */
     public void set_metadata(Map<String, Object> map) {
         set_metadata(
-                (float) map.get("timestamp"),
+                (long) map.get("timestamp"),
                 (String) map.get("description"),
                 (String) map.get("environment"),
                 (String) map.get("sensor_type"),
-                (int) map.get("number_of_sensors"),
-                (List<?>) map.get("position_of_sensors"),
+                Integer.parseInt((String) map.get("number_of_sensors")),
+                List.of(((String) map.get("position_of_sensors")).split(",")),
                 map.get("config"),
                 map.get("gestures")
         );
@@ -145,7 +146,7 @@ public class TofRecording {
      * @param position_of_sensors position of sensors
      * @param config config
      * @param gestures gestures */
-    private void set_metadata(float timestamp, String description, String environment, String sensor_type, int number_of_sensors, List<?> position_of_sensors, Object config, Object gestures) {
+    private void set_metadata(long timestamp, String description, String environment, String sensor_type, int number_of_sensors, List<?> position_of_sensors, Object config, Object gestures) {
         if (number_of_sensors == 0) number_of_sensors = 1;
 
         metadata.put("timestamp", timestamp);                       // timestamp: unixtimestamp
@@ -202,11 +203,6 @@ public class TofRecording {
             return null;
             //throw new StopIteration();
         }
-    }
-
-    /** Print the metadata - just for testing */
-    public void print_metadata() {
-        System.out.println("Metadata in TofRecording: " + metadata);
     }
 
     /** Get the metadata

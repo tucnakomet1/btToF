@@ -11,11 +11,27 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
-        <!-- Customize your theme here. -->
+        <!-- Text black/ white -->
     </style>
     <!-- Base application theme. -->
     <style name="Base.Theme.RPBT" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="buttonStyle">@style/CustomButtonStyle</item>
+        <item name="android:textColorPrimary">@color/textColorLightMode</item>
+    </style>
+
+    <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/textColorLightMode</item>
+        <item name="android:background">@drawable/button_next_prev_etc</item>
+        <item name="android:backgroundTint">@null</item>
+    </style>
+
+    <color name="textColorLightMode">#000000</color>
+    <color name="textColorDarkMode">#FFFFFF</color>
+
+    <style name="roundedImageViewRounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

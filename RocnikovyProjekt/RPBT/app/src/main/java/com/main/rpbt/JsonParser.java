@@ -1,42 +1,46 @@
 package com.main.rpbt;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
-import android.util.Log;
-import android.view.accessibility.AccessibilityManager;
-import android.content.res.AssetManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class JsonParser extends AppCompatActivity {
-    private static int maxNum = 0;
+    private static final String[] itemList = {
+            "ambient_per_spad", "nb_spads_enabled", "nb_target_detected", "signal_per_spad",
+            "range_sigma", "distance", "target_status", "reflectance_percent", "motion_indicator"};
 
-    public static void print(String str) {
-        Log.d(TAG, str);
-    }
+    public static Map<String, List<double[][]>> loadDataFromJson(Context context, int grid, String fileName) {
+        Map<String, List<double[][]>> framesMap = new HashMap<>();
 
-    public static int getMaxNum() {
-        return maxNum;
-    }
+        // Initialize map with empty lists for each item in itemList
+        for (String item : itemList) {
+            framesMap.put(item, new ArrayList<>());
+        }
 
-    public static List<double[][]> loadDataFromJson(Context context) {
-        List<double[][]> frames = new ArrayList<>();
         try {
-            InputStream inputStream = context.getAssets().open("play.json");
+            File jsonDir = new File(context.getFilesDir(), "jsonFiles");
+            File file = new File(jsonDir, fileName); // fileName je název souboru, který chcete načíst
+            InputStream inputStream = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                inputStream = Files.newInputStream(file.toPath());
+            }
+
+            //InputStream inputStream = context.getAssets().open(fileName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder jsonBuilder = new StringBuilder();
 
@@ -49,33 +53,39 @@ public class JsonParser extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject(jsonString);
             JSONArray recordingArray = jsonObject.getJSONArray("recording");
 
-
             for (int i = 0; i < recordingArray.length(); i++) {
-                JSONArray distanceArray = recordingArray.getJSONObject(i).getJSONArray("distance");
-                double[][] frame = new double[8][8];
-                for (int x = 0; x < 8; x++) {
-                    JSONArray rowArray = distanceArray.getJSONArray(x);
-                    for (int y = 0; y < 8; y++) {
-                        JSONArray cellArray = rowArray.getJSONArray(y);
+                JSONObject record = recordingArray.getJSONObject(i);
 
-                        if (cellArray.length() > 0) {
-                            int sum = 0;
-                            for (int z = 0; z < cellArray.length(); z++) {
-                                sum += cellArray.getInt(z);
+                for (String item : itemList) {
+                    if (record.has(item) && !record.isNull(item)) {
+                        JSONArray itemArray = record.getJSONArray(item);
+
+                        double[][] frame = new double[grid][grid];
+
+                        for (int x = 0; x < grid; x++) {
+                            JSONArray rowArray = itemArray.getJSONArray(x);
+
+                            for (int y = 0; y < grid; y++) {
+                                JSONArray cellArray = rowArray.getJSONArray(y);
+
+                                if (cellArray.length() > 0) {
+                                    frame[y][x] = cellArray.getInt(0);  // Use the first value if the array is not empty
+                                } else {
+                                    frame[y][x] = 0.0;                        // If the field is empty, assign the value zero
+                                }
                             }
-                            if (sum > maxNum) maxNum = sum;
-                            frame[y][x] = sum;       // Pokud pole neni prazdne, vezmeme prvni hodnotu jako cislo
-                        } else {
-                            frame[y][x] = 0.0;                                  // Pokud je pole prazdne, priradime hodnotu nula
                         }
+                        Objects.requireNonNull(framesMap.get(item)).add(frame);
+                    } else {
+                        // If the item is null or does not exist, add a grid filled with zeros
+                        double[][] emptyFrame = new double[grid][grid];
+                        Objects.requireNonNull(framesMap.get(item)).add(emptyFrame);
                     }
                 }
-                frames.add(frame);
             }
-
         } catch (IOException | org.json.JSONException e) {
             e.printStackTrace();
         }
-        return frames;
+        return framesMap;
     }
 }

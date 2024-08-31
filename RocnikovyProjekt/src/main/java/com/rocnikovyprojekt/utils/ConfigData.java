@@ -8,24 +8,27 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 /** Class for handling the configuration data */
 public class ConfigData {
+
+    private final Logger logger = Logger.getLogger(ConfigData.class.getName());
     private static final byte[] SYNC_MESSAGE = {(byte) 0xA5, (byte) 0x68, (byte) 0x47, (byte) 0x0F};
 
     private static String[] metadata;
 
-    private static String comPort = "", numSensors = "", size = "", numTargets = "", order = "", sharpener = "";
-    private static String ambientPerSpad = "", nbSpadsEnabled = "", nbTargetDetected = "", signalPerSpad = "", rangeSigma = "", distance = "", targetStatus = "", reflectancePercent = "", motionIndicator = "", accel = "", xtalk = "";
-    private static String rotation = "", flip = "", fontsize = "", colormapMin = "", colormapMax = "";
+    private static String com_port = "", num_sensors = "", size = "", num_targets = "", order = "", sharpener = "";
+    private static String ambient_per_spad = "", nb_spads_enabled = "", nb_target_detected = "", signal_per_spad = "", range_sigma = "", distance = "", target_status = "", reflectance_percent = "", motion_indicator = "", accel = "", xtalk = "";
+    private static String rotation = "", flip = "", fontsize = "", colormap_min = "", colormap_max = "";
 
 
     /** Constructor - fills the metadata array */
     public ConfigData() {
         metadata = new String[]{
-                comPort, numSensors, size, numTargets, order, sharpener,
-                ambientPerSpad, nbSpadsEnabled, nbTargetDetected, signalPerSpad, rangeSigma, distance, targetStatus, reflectancePercent, motionIndicator, accel, xtalk,
-                rotation, flip, fontsize, colormapMin, colormapMax
+                com_port, num_sensors, size, num_targets, order, sharpener,
+                ambient_per_spad, nb_spads_enabled, nb_target_detected, signal_per_spad, range_sigma, distance, target_status, reflectance_percent, motion_indicator, accel, xtalk,
+                rotation, flip, fontsize, colormap_min, colormap_max
         };
     }
 
@@ -39,28 +42,28 @@ public class ConfigData {
      * @return configuration data */
     public Map<String, String> getConfig() {
         Map<String, String> configData = new HashMap<>();
-        configData.put("comPort", comPort);
-        configData.put("numSensors", numSensors);
+        configData.put("com_port", com_port);
+        configData.put("num_sensors", num_sensors);
         configData.put("size", size);
-        configData.put("numTargets", numTargets);
+        configData.put("num_targets", num_targets);
         configData.put("order", order);
         configData.put("sharpener", sharpener);
-        configData.put("ambientPerSpad", ambientPerSpad);
-        configData.put("nbSpadsEnabled", nbSpadsEnabled);
-        configData.put("nbTargetDetected", nbTargetDetected);
-        configData.put("signalPerSpad", signalPerSpad);
-        configData.put("rangeSigma", rangeSigma);
+        configData.put("ambient_per_spad", ambient_per_spad);
+        configData.put("nb_spads_enabled", nb_spads_enabled);
+        configData.put("nb_target_detected", nb_target_detected);
+        configData.put("signal_per_spad", signal_per_spad);
+        configData.put("range_sigma", range_sigma);
         configData.put("distance", distance);
-        configData.put("targetStatus", targetStatus);
-        configData.put("reflectancePercent", reflectancePercent);
-        configData.put("motionIndicator", motionIndicator);
+        configData.put("target_status", target_status);
+        configData.put("reflectance_percent", reflectance_percent);
+        configData.put("motion_indicator", motion_indicator);
         configData.put("accel", accel);
         configData.put("xtalk", xtalk);
         configData.put("rotation", rotation);
         configData.put("flip", flip);
         configData.put("fontsize", fontsize);
-        configData.put("colormapMin", colormapMin);
-        configData.put("colormapMax", colormapMax);
+        configData.put("colormap_min", colormap_min);
+        configData.put("colormap_max", colormap_max);
 
         return configData;
     }
@@ -85,31 +88,29 @@ public class ConfigData {
             JSONTokener tokener = new JSONTokener(reader);
             JSONObject jsonObject = new JSONObject(tokener);
 
-            System.out.println("ConfigData: " + jsonObject);
-
             // Use the keys to set values for ConfigData fields
-            comPort = jsonObject.optString("comPort", "");
-            numSensors = jsonObject.optString("numSensors", "1");
+            com_port = jsonObject.optString("com_port", "none");
+            num_sensors = jsonObject.optString("num_sensors", "1");
             size = jsonObject.optString("size", "8x8");
-            numTargets = jsonObject.optString("numTargets", "4");
+            num_targets = jsonObject.optString("num_targets", "4");
             order = jsonObject.optString("order", "closest");
             sharpener = jsonObject.optString("sharpener", "5");
-            ambientPerSpad = jsonObject.optString("ambientPerSpad", "off");
-            nbSpadsEnabled = jsonObject.optString("nbSpadsEnabled", "off");
-            nbTargetDetected = jsonObject.optString("nbTargetDetected", "on");
-            signalPerSpad = jsonObject.optString("signalPerSpad", "off");
-            rangeSigma = jsonObject.optString("rangeSigma", "off");
+            ambient_per_spad = jsonObject.optString("ambient_per_spad", "off");
+            nb_spads_enabled = jsonObject.optString("nb_spads_enabled", "off");
+            nb_target_detected = jsonObject.optString("nb_target_detected", "on");
+            signal_per_spad = jsonObject.optString("signal_per_spad", "off");
+            range_sigma = jsonObject.optString("range_sigma", "off");
             distance = jsonObject.optString("distance", "on");
-            targetStatus = jsonObject.optString("targetStatus", "on");
-            reflectancePercent = jsonObject.optString("reflectancePercent", "off");
-            motionIndicator = jsonObject.optString("motionIndicator", "off");
+            target_status = jsonObject.optString("target_status", "on");
+            reflectance_percent = jsonObject.optString("reflectance_percent", "off");
+            motion_indicator = jsonObject.optString("motion_indicator", "off");
             accel = jsonObject.optString("accel", "off");
             xtalk = jsonObject.optString("xtalk", "off");
             rotation = jsonObject.optString("rotation", "0");
             flip = jsonObject.optString("flip", "y");
             fontsize = jsonObject.optString("fontsize", "0");
-            colormapMin = jsonObject.optString("colormapMin", "20");
-            colormapMax = jsonObject.optString("colormapMax", "2000");
+            colormap_min = jsonObject.optString("colormap_min", "20");
+            colormap_max = jsonObject.optString("colormap_max", "2000");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,25 +119,25 @@ public class ConfigData {
 
     /** Set the default values for the configuration */
     public void getDefault() {
-        comPort = "";
-        numSensors = "1";
+        com_port = "none";
+        num_sensors = "1";
         size = "8x8";
-        numTargets = "4";
+        num_targets = "4";
         order = "closest";
         sharpener = "5";
-        ambientPerSpad = "off";
-        nbSpadsEnabled = "off";
-        nbTargetDetected = "on";
-        signalPerSpad = "off";
-        rangeSigma = "off";
+        ambient_per_spad = "off";
+        nb_spads_enabled = "off";
+        nb_target_detected = "on";
+        signal_per_spad = "off";
+        range_sigma = "off";
         distance = "on";
-        targetStatus = "on";
-        reflectancePercent = "off";
-        motionIndicator = "off";
+        target_status = "on";
+        reflectance_percent = "off";
+        motion_indicator = "off";
         accel = "off";
         xtalk = "off";
 
-        System.out.println("Default ConfigData: " + Arrays.toString(metadata));
+        logger.info("Default ConfigData: " + Arrays.toString(metadata));
     }
 
 
@@ -151,21 +152,21 @@ public class ConfigData {
 
             if (configData != null) {
                 ConfigData config = new ConfigData();
-                comPort = configData.getOrDefault("comPort", "");
-                numSensors = configData.getOrDefault("numSensors", "1");
+                com_port = configData.getOrDefault("com_port", "none");
+                num_sensors = configData.getOrDefault("num_sensors", "1");
                 size = configData.getOrDefault("size", "8x8");
-                numTargets = configData.getOrDefault("numTargets", "4");
+                num_targets = configData.getOrDefault("num_targets", "4");
                 order = configData.getOrDefault("order", "closest");
                 sharpener = configData.getOrDefault("sharpener", "5");
-                ambientPerSpad = configData.getOrDefault("ambientPerSpad", "off");
-                nbSpadsEnabled = configData.getOrDefault("nbSpadsEnabled", "off");
-                nbTargetDetected = configData.getOrDefault("nbTargetDetected", "on");
-                signalPerSpad = configData.getOrDefault("signalPerSpad", "off");
-                rangeSigma = configData.getOrDefault("rangeSigma", "off");
+                ambient_per_spad = configData.getOrDefault("ambient_per_spad", "off");
+                nb_spads_enabled = configData.getOrDefault("nb_spads_enabled", "off");
+                nb_target_detected = configData.getOrDefault("nb_target_detected", "on");
+                signal_per_spad = configData.getOrDefault("signal_per_spad", "off");
+                range_sigma = configData.getOrDefault("range_sigma", "off");
                 distance = configData.getOrDefault("distance", "on");
-                targetStatus = configData.getOrDefault("targetStatus", "on");
-                reflectancePercent = configData.getOrDefault("reflectancePercent", "off");
-                motionIndicator = configData.getOrDefault("motionIndicator", "off");
+                target_status = configData.getOrDefault("target_status", "on");
+                reflectance_percent = configData.getOrDefault("reflectance_percent", "off");
+                motion_indicator = configData.getOrDefault("motion_indicator", "off");
                 accel = configData.getOrDefault("accel", "off");
                 xtalk = configData.getOrDefault("xtalk", "off");
 
@@ -194,24 +195,25 @@ public class ConfigData {
         byte[] initMsg = new byte[SYNC_MESSAGE.length + protocolItems.length];
         System.arraycopy(SYNC_MESSAGE, 0, initMsg, 0, SYNC_MESSAGE.length); // copy SYNC_MESSAGE to initMsg
 
-        int index = SYNC_MESSAGE.length;
+        Map<String, String> meta = getConfig();
 
-        for (int i = 0; i < protocolItems.length; i++) {
-            String value = ConfigData.metadata[i];
+        int i = 4;
+        for (String item : protocolItems) {
+            String value = meta.get(item);
 
             if (translate.containsKey(value)) {
-                initMsg[index++] = translate.get(value);
+                initMsg[i] = translate.get(value);
             } else {
                 try {
-                    if (Objects.equals(value, "")) {
-                        initMsg[index++] = 0;
-                    } else {
-                        initMsg[index++] = Byte.parseByte(value);
-                    }
+                    if (Objects.equals(value, ""))
+                        initMsg[i] = 0;
+                    else
+                        initMsg[i] = Byte.parseByte(value);
                 } catch (NumberFormatException e) {
-                    System.out.println("ERROR - getInitMsg: " + e);
+                    logger.warning("ERROR - getInitMsg: " + e);
                 }
             }
+            i++;
         }
 
         return initMsg;
@@ -222,19 +224,19 @@ public class ConfigData {
     private static String[] getProtocolTxItems() {
         return new String[]{
                 "size",
-                "numSensors",
-                "numTargets",
+                "num_sensors",
+                "num_targets",
                 "order",
                 "sharpener",
-                "ambientPerSpad",
-                "nbSpadsEnabled",
-                "nbTargetDetected",
-                "signalPerSpad",
-                "rangeSigma",
+                "ambient_per_spad",
+                "nb_spads_enabled",
+                "nb_target_detected",
+                "signal_per_spad",
+                "range_sigma",
                 "distance",
-                "targetStatus",
-                "reflectancePercent",
-                "motionIndicator",
+                "target_status",
+                "reflectance_percent",
+                "motion_indicator",
                 "accel",
                 "xtalk"
         };
@@ -245,7 +247,7 @@ public class ConfigData {
     public int[] getFrameResolution() {
         String[] splitted = size.split("x");
         int width = Integer.parseInt(splitted[0]);
-        int height = Integer.parseInt(splitted[1]) * Integer.parseInt(numSensors);
+        int height = Integer.parseInt(splitted[1]) * Integer.parseInt(num_sensors);
 
         return new int[]{width, height};
     }
@@ -254,7 +256,7 @@ public class ConfigData {
     /** Get number of sensors
      * @return number of sensors */
     public int getNumTargets() {
-        return Integer.parseInt(numTargets);
+        return Integer.parseInt(num_targets);
     }
 
     /** Get the acceleration

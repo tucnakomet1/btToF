@@ -97,13 +97,31 @@ public class TofFunc {
 
     /** Start the recording */
     public void recording_start() {
+        if (port.openPort()) {
+            byte[] initMsg = configData.getInitMsg();
+
+            logger.info("initMsg: " + Arrays.toString(initMsg));
+
+            // send the initialization message to the sensor
+            port.writeBytes(initMsg, initMsg.length);
+            //recording_start();
+        } else {
+            logger.warning("Port not opened");
+        }
+
         tof_recording = new TofRecording();
         tof_recording.set_timestamp_now();
-        tof_recording.print_metadata();
 
         // set the event
         e_recording.set();
-        logger.info("\nrecording...");
+        System.out.println("\nrecording...");
+
+        Threads th = new Threads(port, configData);
+        TofFrame frame = th.readFrame();
+        logger.info("frame" + frame);
+        recording(frame);
+        recording_end();
+        System.out.println("Ended");
     }
 
 
@@ -144,6 +162,7 @@ public class TofFunc {
         Map<String, Object> metadata_new = new java.util.HashMap<>(ssMap);
 
         metadata_new.put("config", ConfigData.getMetadata());
+        metadata_new.put("timestamp", System.currentTimeMillis());
 
         logger.info("metadata_new: " + metadata_new);
 

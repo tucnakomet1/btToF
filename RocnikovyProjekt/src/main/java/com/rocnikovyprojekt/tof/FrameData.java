@@ -6,28 +6,28 @@ import java.util.Map;
 
 /** Class for handling the ToF sensor frame data */
 public class FrameData {
-    private double[][][] ambientPerSpad;
-    private int[][][] nbSpadsEnabled;
-    private int[][][] nbTargetDetected;
-    private double[][][] signalPerSpad;
-    private double[][][] rangeSigma;
-    private double[][][] distance;
-    private int[][][] targetStatus;
-    private double[][][] reflectancePercent;
-    private double[][][] motionIndicator;
+    private double[][][] ambient_per_spad;
+    private int[][][] nb_spads_enabled;
+    private int[][][] nb_target_detected;
+    private double[][][] signal_per_spad;
+    private double[][][] range_sigma;
+    private int[][][] distance;
+    private int[][][] target_status;
+    private double[][][] reflectance_percent;
+    private double[][][] motion_indicator;
     private double[][][] accel;
 
     /** Constructor */
     public FrameData() {
-        this.ambientPerSpad = null;
-        this.nbSpadsEnabled = null;
-        this.nbTargetDetected = null;
-        this.signalPerSpad = null;
-        this.rangeSigma = null;
+        this.ambient_per_spad = null;
+        this.nb_spads_enabled = null;
+        this.nb_target_detected = null;
+        this.signal_per_spad = null;
+        this.range_sigma = null;
         this.distance = null;
-        this.targetStatus = null;
-        this.reflectancePercent = null;
-        this.motionIndicator = null;
+        this.target_status = null;
+        this.reflectance_percent = null;
+        this.motion_indicator = null;
         this.accel = null;
     }
 
@@ -35,34 +35,33 @@ public class FrameData {
      * @return Map<String, Object>  serialized data */
     public Map<String, Object> serialize() {
         Map<String, Object> serMap = new HashMap<>();
-        serMap.put("ambientPerSpad", cropData(ambientPerSpad));
-        serMap.put("nbSpadsEnabled", cropData(nbSpadsEnabled));
-        serMap.put("nbTargetDetected", cropData(nbTargetDetected));
-        serMap.put("signalPerSpad", cropData(signalPerSpad));
-        serMap.put("rangeSigma", cropData(rangeSigma));
+        serMap.put("ambient_per_spad", cropData(ambient_per_spad));
+        serMap.put("nb_spads_enabled", cropData(nb_spads_enabled));
+        serMap.put("nb_target_detected", cropData(nb_target_detected));
+        serMap.put("signal_per_spad", cropData(signal_per_spad));
+        serMap.put("range_sigma", cropData(range_sigma));
         serMap.put("distance", cropData(distance));
-        serMap.put("targetStatus", cropData(targetStatus));
-        serMap.put("reflectancePercent", cropData(reflectancePercent));
-        serMap.put("motionIndicator", cropData(motionIndicator));
+        serMap.put("target_status", cropData(target_status));
+        serMap.put("reflectance_percent", cropData(reflectance_percent));
+        serMap.put("motion_indicator", cropData(motion_indicator));
         serMap.put("accel", accel);
         return serMap;
     }
 
     /** Method for deserializing the data from Map
      * @param loadedMap Map with the data
-     * @param num_targets number of targets
      * @return FrameData deserialized data */
-    public static FrameData deserialize(Map<?, ?> loadedMap, int num_targets) {
+    public static FrameData deserialize(Map<?, ?> loadedMap) {
         FrameData frameData = new FrameData();
-        frameData.ambientPerSpad = (double[][][]) loadedMap.get("ambientPerSpad");
-        frameData.nbSpadsEnabled = (int[][][]) loadedMap.get("nbSpadsEnabled");
-        frameData.nbTargetDetected = (int[][][]) loadedMap.get("nbTargetDetected");
-        frameData.signalPerSpad = (double[][][]) loadedMap.get("signalPerSpad");
-        frameData.rangeSigma = (double[][][]) loadedMap.get("rangeSigma");
-        frameData.distance = (double[][][]) loadedMap.get("distance");
-        frameData.targetStatus = (int[][][]) loadedMap.get("targetStatus");
-        frameData.reflectancePercent = (double[][][]) loadedMap.get("reflectancePercent");
-        frameData.motionIndicator = (double[][][]) loadedMap.get("motionIndicator");
+        frameData.ambient_per_spad = (double[][][]) loadedMap.get("ambient_per_spad");
+        frameData.nb_spads_enabled = (int[][][]) loadedMap.get("nb_spads_enabled");
+        frameData.nb_target_detected = (int[][][]) loadedMap.get("nb_target_detected");
+        frameData.signal_per_spad = (double[][][]) loadedMap.get("signal_per_spad");
+        frameData.range_sigma = (double[][][]) loadedMap.get("range_sigma");
+        frameData.distance = (int[][][]) loadedMap.get("distance");
+        frameData.target_status = (int[][][]) loadedMap.get("target_status");
+        frameData.reflectance_percent = (double[][][]) loadedMap.get("reflectance_percent");
+        frameData.motion_indicator = (double[][][]) loadedMap.get("motion_indicator");
         frameData.accel = (double[][][]) loadedMap.get("accel");
 
         // TODO: implement logic for converting data to the correct format if it is null or of the wrong type
@@ -81,14 +80,14 @@ public class FrameData {
 
     /** Getter for the distance
      * @return distance */
-    public double[][][] getDistance() {
+    public int[][][] getDistance() {
         return distance;
     }
 
     /** Getter for the target status
      * @return target status */
     public int[][][] getTargetStatus() {
-        return targetStatus;
+        return target_status;
     }
 
 
@@ -98,7 +97,7 @@ public class FrameData {
     public String toString() {
         return "FrameData{" +
                 "distance=" + Arrays.deepToString(distance) +
-                ", targetStatus=" + Arrays.deepToString(targetStatus) +
+                ", target_status=" + Arrays.deepToString(target_status) +
                 '}';
     }
 

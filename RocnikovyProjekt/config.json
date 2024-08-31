@@ -10,7 +10,7 @@
     "fontsize": "0",
     "accel": "off",
     "colormap_max": "2000",
-    "num_targets": "1",
+    "num_targets": "4",
     "motion_indicator": "off",
     "num_sensors": "1",
     "size": "8x8",
