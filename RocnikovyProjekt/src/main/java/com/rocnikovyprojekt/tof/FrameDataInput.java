@@ -32,10 +32,9 @@ public class FrameDataInput {
     }
 
     /** Method for converting to FrameData
-     * @param numTargets number of targets
      * @return FrameData converted data */
-    public FrameData toFrameData(int numTargets) {
-        return FrameData.deserialize(toMap(), numTargets);
+    public FrameData toFrameData() {
+        return FrameData.deserialize(toMap());
     }
 
     /** Method for converting to Map

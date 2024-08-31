@@ -1,0 +1,111 @@
+<resources>
+    <string name="app_name">RPBT</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="settings">Settings</string>
+    <string name="rotation">Rotation:</string>
+    <string name="_0deg">0°</string>
+    <string name="_90deg">90°</string>
+    <string name="_180deg">180°</string>
+    <string name="_270deg">270°</string>
+    <string name="accelerometer">Accelerometer:</string>
+    <string name="xtalk">Use xtalk:</string>
+    <string name="distance">Distance:</string>
+    <string name="ambient_per_spad">Ambient per SPAD:</string>
+    <string name="number_of_spads_enable">Number of SPADs enable:</string>
+    <string name="number_of_targets_detected">Number of targets detected:</string>
+    <string name="signal_per_spad">Signal per SPAD:</string>
+    <string name="range_sigma">Range sigma:</string>
+    <string name="target_status">Target status:</string>
+    <string name="reflectance">Reflectance:</string>
+    <string name="motion_indicator">Motion indicator:</string>
+    <string name="fps">FPS:</string>
+    <string name="back">Back</string>
+    <string name="next_page">Next</string>
+    <string name="play">Play</string>
+    <string name="sharpener">Sharpener:</string>
+    <string name="order">Order:</string>
+    <string name="number_of_targets">Number of targets:</string>
+    <string name="size">Size:</string>
+    <string name="number_of_sensors">Number of sensors:</string>
+    <string name="_4x4size">4x4</string>
+    <string name="_8x8size">8x8</string>
+    <string name="closest">closest</string>
+    <string name="strongest">strongest</string>
+    <string name="save_config">Save config</string>
+    <string name="_1num">1</string>
+    <string name="_2num">2</string>
+    <string name="_3num">3</string>
+    <string name="_4num">4</string>
+    <string name="font_size">Font size:</string>
+    <string name="colormap_min">Colormap min:</string>
+    <string name="colormap_max">Colormap max:</string>
+    <string name="flip">Flip:</string>
+    <string name="xy">xy</string>
+    <string name="y">y</string>
+    <string name="x">x</string>
+    <string name="none">None</string>
+    <string name="camera_amp_player"><![CDATA[Camera & Player]]></string>
+    <string name="record">Record</string>
+    <string name="frame">Frame:</string>
+    <string name="_0">0</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="file_name">File name</string>
+    <string name="load_file">Load file</string>
+    <string name="no_records">No records!</string>
+    <string name="_179_0kib">179.0KiB</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="bluetooth_devices_nearby">Bluetooth devices nearby:</string>
+    <string name="scan_devices">Scan devices</string>
+    <string name="connected_device">Connected device:</string>
+    <string name="name">Name:</string>
+    <string name="mac_address">MAC address:</string>
+    <string name="paired_devices">Paired devices</string>
+    <string name="device_name">Device Name:</string>
+    <string name="device_mac_address">Device MAC Address:</string>
+    <string name="mac">00:00:00:00:00:00</string>
+    <string name="arrow_right">arrow_right</string>
+    <string name="send_ping">Send ping</string>
+</resources>

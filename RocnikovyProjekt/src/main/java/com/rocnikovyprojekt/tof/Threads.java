@@ -33,25 +33,19 @@ public class Threads {
         Threads.config = config;
 
         parser = get_parser_dict(config);       // Map<String, Object[]>
-        logger.info("Config: " + config.getConfig());
+        printParser(parser);
     }
 
     /** Run the thread
      * TODO: make run as a thread method*/
     public void run() {
         // stops after 5 seconds
-        long startTime = System.currentTimeMillis();
-        long end = startTime + 5000;
+        long end = System.currentTimeMillis() + 3000;
 
-        while (System.currentTimeMillis() < end) { // 5 sekund
-
-            TofFrame f = readFrame();
-            logger.info("Frame1: " + f);
-            while (true) {
-                logger.info("In loop");
-                TofFrame frame = readFrame();
-                logger.info("frame" + frame);
-            }
+        while (end - System.currentTimeMillis() > 0) {
+            System.out.println(end - System.currentTimeMillis());
+            TofFrame frame = readFrame();
+            logger.info("frame" + frame);
         }
         logger.info("\t\tStop thread!\t\t");
     }
@@ -65,20 +59,13 @@ public class Threads {
 
         // Synchronize - wait for the sync packet
         while (true) {
-            // Read one byte at a time
             port.readBytes(buffer, 1);
             byte readByte = buffer[0];
 
-            System.out.println("Read byte: " + readByte + ",\tSyncFifoSize: " + syncFifo.size());
-
-            if (syncFifo.size() >= 4) {
+            if (syncFifo.size() >= 4)
                 syncFifo.removeFirst(); // Remove oldest byte
-            }
-            // TODO: make this work
-            syncFifo.addLast(readByte); // Add new byte - this does not work!!!
 
-            logger.info("SyncFifo : " + syncFifo);
-
+            syncFifo.addLast(readByte);
             if (matches(syncFifo, syncPacket4)) {
                 res = new int[]{4, 4};
                 break;
@@ -92,25 +79,21 @@ public class Threads {
                 res = new int[]{8, 16};
                 break;
             }
-            // TODO: remove this try-catch (sleep) block
-            try {
-                TimeUnit.MILLISECONDS.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
         }
+
+        System.out.println("Synced! The resolution is: " + res[0] + "x" + res[1]);
 
         // Read the frame data
         Map<String, Object> data = new HashMap<>();
 
-        if (res[0] - res[1] == 0) { // res = [4,4] / [8,8]
+        if (res[0] - res[1] == 0) {         // if res is [4,4] or [8,8]
             data = grabFrame(parser);
 
             if ("on".equals(config.getAccel()))
                 data.put("accel", grabAccel());
 
-            String sensorID = (String) data.remove("sensor_ID");
-            return new TofFrame(data, res, sensorID);
+            int[][][] sensorIDList = (int[][][]) data.remove("sensor_ID");
+            return new TofFrame(data, res, sensorIDList[0][0][0]);
 
         } else {
             Map<String, Object> data1 = grabFrame(parser);
@@ -119,7 +102,7 @@ public class Threads {
             if ("on".equals(config.getAccel()))
                 data.put("accel", grabAccel());
 
-            String[] sensorIDs = {(String) data1.remove("sensor_ID"), (String) data2.remove("sensor_ID")};
+            int[][][][] sensorIDs = { (int[][][]) data1.remove("sensor_ID"), (int[][][]) data2.remove("sensor_ID")};
 
             for (Map.Entry<String, Object> entry : data1.entrySet()) {
                 data.put(entry.getKey(), concatenateData(entry.getValue(), data2.get(entry.getKey())));
@@ -164,6 +147,7 @@ public class Threads {
     private int[] grabAccel() {
         int[] accelData = new int[3];
 
+        System.out.println("Grab!");
         for (int i = 0; i < 3; i++) {
             byte[] buffer = new byte[2];
             port.readBytes(buffer, 2);  // Read 2 bytes per axis
@@ -199,6 +183,7 @@ public class Threads {
                 for (int subItem : (int[]) value[1])
                     byteLength *= subItem;
 
+
                 List<Integer> values = new ArrayList<>(byteLength);
                 Integer val = (Integer) value[2];
 
@@ -216,14 +201,14 @@ public class Threads {
                     else if (val == 2)
                         values.add((int) byteBuffer.getShort(i * val));
                 }
-
                 int[] intArray = values.stream().mapToInt(Integer::intValue).toArray();
 
+                 System.out.println("Int array: " + Arrays.toString(intArray));
+
                 // Reshape the data into a multi-dimensional array
-                Object reshapedArray = reshape(intArray, (int[]) value[1]);
+                int[][][] reshapedArray = reshape(intArray, (int[]) value[1]);
                 data.put(key, reshapedArray);
             }
-
         }
 
         return data;
@@ -233,19 +218,19 @@ public class Threads {
      * @param data data array
      * @param shape shape array
      * @return Object */
-    private Object reshape(int[] data, int[] shape) {
-        if (shape.length == 1) {
-            return data;
-        } else if (shape.length == 2) {
-            int rows = shape[0];
-            int cols = shape[1];
-            int[][] reshaped = new int[rows][cols];
-            for (int i = 0; i < rows; i++) {
-                System.arraycopy(data, i * cols, reshaped[i], 0, cols);
+    private int[][][] reshape(int[] data, int[] shape) {
+        System.out.println("Reshape: " + Arrays.toString(shape));
+        int rows = shape[0];
+        int cols = shape[1];
+        int depth = shape[2];
+        int[][][] reshaped = new int[rows][cols][depth];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.arraycopy(data, i * cols * depth + j * depth, reshaped[i][j], 0, depth);
             }
-            return reshaped;
         }
-        return data;
+        return reshaped;
     }
 
     /** Get the parser dictionary
@@ -255,28 +240,52 @@ public class Threads {
         Map<String, Object[]> items = new HashMap<>();
         int[] res = config.getFrameResolution();
 
-        items.put("sensor_ID", new Object[]{false, new int[]{1, 1, 1}, 1});
-        items.put("ambientPerSpad", new Object[]{false, new int[]{res[0], res[1], 1}, 4});
-        items.put("nbSpadsEnabled", new Object[]{false, new int[]{res[0], res[1], 1}, 4});
-        items.put("nbTargetDetected", new Object[]{false, new int[]{res[0], res[1], 1}, 1});
-        items.put("signalPerSpad", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 4});
-        items.put("rangeSigma", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 2});
+        items.put("sensor_ID", new Object[]{true, new int[]{1, 1, 1}, 1});
+        items.put("ambient_per_spad", new Object[]{false, new int[]{res[0], res[1], 1}, 4});
+        items.put("nb_spads_enabled", new Object[]{false, new int[]{res[0], res[1], 1}, 4});
+        items.put("nb_target_detected", new Object[]{false, new int[]{res[0], res[1], 1}, 1});
+        items.put("signal_per_spad", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 4});
+        items.put("range_sigma", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 2});
         items.put("distance", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 2});
-        items.put("targetStatus", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 1});
-        items.put("reflectancePercent", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 1});
-        items.put("motionIndicator", new Object[]{false, new int[]{1, 1, 1}, 140});
+        items.put("target_status", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 1});
+        items.put("reflectance_percent", new Object[]{false, new int[]{res[0], res[1], config.getNumTargets()}, 1});
+        items.put("motion_indicator", new Object[]{false, new int[]{1, 1, 1}, 140});
 
 
+        // change first value to true if the key is in the config
         Map<String, String> conf = config.getConfig();
         for (Map.Entry<String, Object[]> entry : items.entrySet()) {
             String key = entry.getKey();
             Object[] value = entry.getValue();
             boolean isEnabled = (Boolean) value[0];
 
+
             if (!isEnabled && "on".equals(conf.get(key))) {
                 value[0] = true;
             }
         }
         return items;
+    }
+
+    // TODO: delete - this is for debugging
+    public void printParser(Map<String, Object[]>  items) {
+        System.out.println("Parser: {");
+        for (Map.Entry<String, Object[]> entry : items.entrySet()) {
+            String key = entry.getKey();
+            Object[] value = entry.getValue();
+
+            System.out.print("  '" + key + "': [");
+            for (int i = 0; i < value.length; i++) {
+                if (i == 0)
+                    System.out.print(value[i] + ", ");
+                else if (i == 1){
+                    int[] nums = (int[]) value[i];
+                    System.out.print(Arrays.toString(nums) + ", ");
+                } else
+                    System.out.print(value[i] + "]");
+            }
+            System.out.println();
+        }
+        System.out.println("}");
     }
 }

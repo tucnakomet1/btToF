@@ -5,14 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.tabs.TabLayout;
 import com.main.rpbt.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -29,49 +34,169 @@ public final class FragmentFirstBinding implements ViewBinding {
   public final Button ButtonPrev;
 
   @NonNull
-  public final Switch detected;
+  public final Button ButtonSaveConfig;
+
+  @NonNull
+  public final Switch accel;
+
+  @NonNull
+  public final Switch ambientPerSpad;
+
+  @NonNull
+  public final LinearLayout buttonsBackNext;
+
+  @NonNull
+  public final TextView colormapMax;
+
+  @NonNull
+  public final TextView colormapMin;
 
   @NonNull
   public final Switch distance;
 
   @NonNull
-  public final SeekBar fpsBar;
+  public final EditText editTextColormapMax;
+
+  @NonNull
+  public final EditText editTextColormapMin;
+
+  @NonNull
+  public final EditText editTextFontSize;
+
+  @NonNull
+  public final EditText editTextNumberDecimal;
+
+  @NonNull
+  public final TabLayout flipLayout;
+
+  @NonNull
+  public final TextView flipText;
+
+  @NonNull
+  public final TextView fontSize;
 
   @NonNull
   public final TextView headerFirst;
 
   @NonNull
-  public final TextView progressFPS;
+  public final Switch motionIndicator;
+
+  @NonNull
+  public final Switch nbSpadsEnabled;
+
+  @NonNull
+  public final Switch nbTargetDetected;
+
+  @NonNull
+  public final TabLayout nbTargetLayout;
+
+  @NonNull
+  public final TextView numberOfSensors;
+
+  @NonNull
+  public final TextView numberOfTargets;
+
+  @NonNull
+  public final TextView order;
+
+  @NonNull
+  public final Switch rangeSigma;
+
+  @NonNull
+  public final Switch reflectancePercent;
 
   @NonNull
   public final SeekBar rotateBar;
 
   @NonNull
-  public final Switch stats;
+  public final TextView sharpener;
 
   @NonNull
-  public final TextView textView2;
+  public final Switch signalPerSpad;
+
+  @NonNull
+  public final TextView size;
+
+  @NonNull
+  public final ScrollView srollViewFirstFragment;
+
+  @NonNull
+  public final Switch targetStatus;
+
+  @NonNull
+  public final ToggleButton toggleButtonNbOfSensors;
+
+  @NonNull
+  public final ToggleButton toggleButtonOrder;
+
+  @NonNull
+  public final ToggleButton toggleButtonSize;
 
   @NonNull
   public final View view;
 
+  @NonNull
+  public final View view2;
+
+  @NonNull
+  public final Switch xtalk;
+
   private FragmentFirstBinding(@NonNull ConstraintLayout rootView, @NonNull Button ButtonNext,
-      @NonNull Button ButtonPrev, @NonNull Switch detected, @NonNull Switch distance,
-      @NonNull SeekBar fpsBar, @NonNull TextView headerFirst, @NonNull TextView progressFPS,
-      @NonNull SeekBar rotateBar, @NonNull Switch stats, @NonNull TextView textView2,
-      @NonNull View view) {
+      @NonNull Button ButtonPrev, @NonNull Button ButtonSaveConfig, @NonNull Switch accel,
+      @NonNull Switch ambientPerSpad, @NonNull LinearLayout buttonsBackNext,
+      @NonNull TextView colormapMax, @NonNull TextView colormapMin, @NonNull Switch distance,
+      @NonNull EditText editTextColormapMax, @NonNull EditText editTextColormapMin,
+      @NonNull EditText editTextFontSize, @NonNull EditText editTextNumberDecimal,
+      @NonNull TabLayout flipLayout, @NonNull TextView flipText, @NonNull TextView fontSize,
+      @NonNull TextView headerFirst, @NonNull Switch motionIndicator,
+      @NonNull Switch nbSpadsEnabled, @NonNull Switch nbTargetDetected,
+      @NonNull TabLayout nbTargetLayout, @NonNull TextView numberOfSensors,
+      @NonNull TextView numberOfTargets, @NonNull TextView order, @NonNull Switch rangeSigma,
+      @NonNull Switch reflectancePercent, @NonNull SeekBar rotateBar, @NonNull TextView sharpener,
+      @NonNull Switch signalPerSpad, @NonNull TextView size,
+      @NonNull ScrollView srollViewFirstFragment, @NonNull Switch targetStatus,
+      @NonNull ToggleButton toggleButtonNbOfSensors, @NonNull ToggleButton toggleButtonOrder,
+      @NonNull ToggleButton toggleButtonSize, @NonNull View view, @NonNull View view2,
+      @NonNull Switch xtalk) {
     this.rootView = rootView;
     this.ButtonNext = ButtonNext;
     this.ButtonPrev = ButtonPrev;
-    this.detected = detected;
+    this.ButtonSaveConfig = ButtonSaveConfig;
+    this.accel = accel;
+    this.ambientPerSpad = ambientPerSpad;
+    this.buttonsBackNext = buttonsBackNext;
+    this.colormapMax = colormapMax;
+    this.colormapMin = colormapMin;
     this.distance = distance;
-    this.fpsBar = fpsBar;
+    this.editTextColormapMax = editTextColormapMax;
+    this.editTextColormapMin = editTextColormapMin;
+    this.editTextFontSize = editTextFontSize;
+    this.editTextNumberDecimal = editTextNumberDecimal;
+    this.flipLayout = flipLayout;
+    this.flipText = flipText;
+    this.fontSize = fontSize;
     this.headerFirst = headerFirst;
-    this.progressFPS = progressFPS;
+    this.motionIndicator = motionIndicator;
+    this.nbSpadsEnabled = nbSpadsEnabled;
+    this.nbTargetDetected = nbTargetDetected;
+    this.nbTargetLayout = nbTargetLayout;
+    this.numberOfSensors = numberOfSensors;
+    this.numberOfTargets = numberOfTargets;
+    this.order = order;
+    this.rangeSigma = rangeSigma;
+    this.reflectancePercent = reflectancePercent;
     this.rotateBar = rotateBar;
-    this.stats = stats;
-    this.textView2 = textView2;
+    this.sharpener = sharpener;
+    this.signalPerSpad = signalPerSpad;
+    this.size = size;
+    this.srollViewFirstFragment = srollViewFirstFragment;
+    this.targetStatus = targetStatus;
+    this.toggleButtonNbOfSensors = toggleButtonNbOfSensors;
+    this.toggleButtonOrder = toggleButtonOrder;
+    this.toggleButtonSize = toggleButtonSize;
     this.view = view;
+    this.view2 = view2;
+    this.xtalk = xtalk;
   }
 
   @Override
@@ -113,9 +238,39 @@ public final class FragmentFirstBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.detected;
-      Switch detected = ViewBindings.findChildViewById(rootView, id);
-      if (detected == null) {
+      id = R.id.ButtonSaveConfig;
+      Button ButtonSaveConfig = ViewBindings.findChildViewById(rootView, id);
+      if (ButtonSaveConfig == null) {
+        break missingId;
+      }
+
+      id = R.id.accel;
+      Switch accel = ViewBindings.findChildViewById(rootView, id);
+      if (accel == null) {
+        break missingId;
+      }
+
+      id = R.id.ambientPerSpad;
+      Switch ambientPerSpad = ViewBindings.findChildViewById(rootView, id);
+      if (ambientPerSpad == null) {
+        break missingId;
+      }
+
+      id = R.id.buttonsBackNext;
+      LinearLayout buttonsBackNext = ViewBindings.findChildViewById(rootView, id);
+      if (buttonsBackNext == null) {
+        break missingId;
+      }
+
+      id = R.id.colormap_max;
+      TextView colormapMax = ViewBindings.findChildViewById(rootView, id);
+      if (colormapMax == null) {
+        break missingId;
+      }
+
+      id = R.id.colormap_min;
+      TextView colormapMin = ViewBindings.findChildViewById(rootView, id);
+      if (colormapMin == null) {
         break missingId;
       }
 
@@ -125,9 +280,45 @@ public final class FragmentFirstBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.fpsBar;
-      SeekBar fpsBar = ViewBindings.findChildViewById(rootView, id);
-      if (fpsBar == null) {
+      id = R.id.editTextColormapMax;
+      EditText editTextColormapMax = ViewBindings.findChildViewById(rootView, id);
+      if (editTextColormapMax == null) {
+        break missingId;
+      }
+
+      id = R.id.editTextColormapMin;
+      EditText editTextColormapMin = ViewBindings.findChildViewById(rootView, id);
+      if (editTextColormapMin == null) {
+        break missingId;
+      }
+
+      id = R.id.editTextFontSize;
+      EditText editTextFontSize = ViewBindings.findChildViewById(rootView, id);
+      if (editTextFontSize == null) {
+        break missingId;
+      }
+
+      id = R.id.editTextNumberDecimal;
+      EditText editTextNumberDecimal = ViewBindings.findChildViewById(rootView, id);
+      if (editTextNumberDecimal == null) {
+        break missingId;
+      }
+
+      id = R.id.flip_layout;
+      TabLayout flipLayout = ViewBindings.findChildViewById(rootView, id);
+      if (flipLayout == null) {
+        break missingId;
+      }
+
+      id = R.id.flip_text;
+      TextView flipText = ViewBindings.findChildViewById(rootView, id);
+      if (flipText == null) {
+        break missingId;
+      }
+
+      id = R.id.font_size;
+      TextView fontSize = ViewBindings.findChildViewById(rootView, id);
+      if (fontSize == null) {
         break missingId;
       }
 
@@ -137,9 +328,57 @@ public final class FragmentFirstBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.progressFPS;
-      TextView progressFPS = ViewBindings.findChildViewById(rootView, id);
-      if (progressFPS == null) {
+      id = R.id.motionIndicator;
+      Switch motionIndicator = ViewBindings.findChildViewById(rootView, id);
+      if (motionIndicator == null) {
+        break missingId;
+      }
+
+      id = R.id.nbSpadsEnabled;
+      Switch nbSpadsEnabled = ViewBindings.findChildViewById(rootView, id);
+      if (nbSpadsEnabled == null) {
+        break missingId;
+      }
+
+      id = R.id.nbTargetDetected;
+      Switch nbTargetDetected = ViewBindings.findChildViewById(rootView, id);
+      if (nbTargetDetected == null) {
+        break missingId;
+      }
+
+      id = R.id.nb_target_layout;
+      TabLayout nbTargetLayout = ViewBindings.findChildViewById(rootView, id);
+      if (nbTargetLayout == null) {
+        break missingId;
+      }
+
+      id = R.id.number_of_sensors;
+      TextView numberOfSensors = ViewBindings.findChildViewById(rootView, id);
+      if (numberOfSensors == null) {
+        break missingId;
+      }
+
+      id = R.id.number_of_targets;
+      TextView numberOfTargets = ViewBindings.findChildViewById(rootView, id);
+      if (numberOfTargets == null) {
+        break missingId;
+      }
+
+      id = R.id.order;
+      TextView order = ViewBindings.findChildViewById(rootView, id);
+      if (order == null) {
+        break missingId;
+      }
+
+      id = R.id.rangeSigma;
+      Switch rangeSigma = ViewBindings.findChildViewById(rootView, id);
+      if (rangeSigma == null) {
+        break missingId;
+      }
+
+      id = R.id.reflectancePercent;
+      Switch reflectancePercent = ViewBindings.findChildViewById(rootView, id);
+      if (reflectancePercent == null) {
         break missingId;
       }
 
@@ -149,15 +388,51 @@ public final class FragmentFirstBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.stats;
-      Switch stats = ViewBindings.findChildViewById(rootView, id);
-      if (stats == null) {
+      id = R.id.sharpener;
+      TextView sharpener = ViewBindings.findChildViewById(rootView, id);
+      if (sharpener == null) {
         break missingId;
       }
 
-      id = R.id.textView2;
-      TextView textView2 = ViewBindings.findChildViewById(rootView, id);
-      if (textView2 == null) {
+      id = R.id.signalPerSpad;
+      Switch signalPerSpad = ViewBindings.findChildViewById(rootView, id);
+      if (signalPerSpad == null) {
+        break missingId;
+      }
+
+      id = R.id.size;
+      TextView size = ViewBindings.findChildViewById(rootView, id);
+      if (size == null) {
+        break missingId;
+      }
+
+      id = R.id.srollViewFirstFragment;
+      ScrollView srollViewFirstFragment = ViewBindings.findChildViewById(rootView, id);
+      if (srollViewFirstFragment == null) {
+        break missingId;
+      }
+
+      id = R.id.targetStatus;
+      Switch targetStatus = ViewBindings.findChildViewById(rootView, id);
+      if (targetStatus == null) {
+        break missingId;
+      }
+
+      id = R.id.toggleButtonNbOfSensors;
+      ToggleButton toggleButtonNbOfSensors = ViewBindings.findChildViewById(rootView, id);
+      if (toggleButtonNbOfSensors == null) {
+        break missingId;
+      }
+
+      id = R.id.toggleButtonOrder;
+      ToggleButton toggleButtonOrder = ViewBindings.findChildViewById(rootView, id);
+      if (toggleButtonOrder == null) {
+        break missingId;
+      }
+
+      id = R.id.toggleButtonSize;
+      ToggleButton toggleButtonSize = ViewBindings.findChildViewById(rootView, id);
+      if (toggleButtonSize == null) {
         break missingId;
       }
 
@@ -167,8 +442,26 @@ public final class FragmentFirstBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentFirstBinding((ConstraintLayout) rootView, ButtonNext, ButtonPrev, detected,
-          distance, fpsBar, headerFirst, progressFPS, rotateBar, stats, textView2, view);
+      id = R.id.view2;
+      View view2 = ViewBindings.findChildViewById(rootView, id);
+      if (view2 == null) {
+        break missingId;
+      }
+
+      id = R.id.xtalk;
+      Switch xtalk = ViewBindings.findChildViewById(rootView, id);
+      if (xtalk == null) {
+        break missingId;
+      }
+
+      return new FragmentFirstBinding((ConstraintLayout) rootView, ButtonNext, ButtonPrev,
+          ButtonSaveConfig, accel, ambientPerSpad, buttonsBackNext, colormapMax, colormapMin,
+          distance, editTextColormapMax, editTextColormapMin, editTextFontSize,
+          editTextNumberDecimal, flipLayout, flipText, fontSize, headerFirst, motionIndicator,
+          nbSpadsEnabled, nbTargetDetected, nbTargetLayout, numberOfSensors, numberOfTargets, order,
+          rangeSigma, reflectancePercent, rotateBar, sharpener, signalPerSpad, size,
+          srollViewFirstFragment, targetStatus, toggleButtonNbOfSensors, toggleButtonOrder,
+          toggleButtonSize, view, view2, xtalk);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

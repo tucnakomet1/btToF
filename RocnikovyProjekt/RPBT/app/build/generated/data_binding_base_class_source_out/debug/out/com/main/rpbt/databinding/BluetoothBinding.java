@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,49 +32,41 @@ public final class BluetoothBinding implements ViewBinding {
   public final Button SearchButton;
 
   @NonNull
-  public final Button button5;
-
-  @NonNull
-  public final Button button6;
-
-  @NonNull
   public final TextView devsText;
 
   @NonNull
   public final TextView devsText2;
 
   @NonNull
-  public final TextView header;
+  public final TextView headerFirst;
 
   @NonNull
   public final LinearLayout linearLayout;
 
   @NonNull
-  public final TextView macLayout;
+  public final ListView listViewDevices;
 
   @NonNull
-  public final TextView nameLayout;
+  public final Button sendPingButton;
 
   @NonNull
   public final TextView textView;
 
   private BluetoothBinding(@NonNull ConstraintLayout rootView, @NonNull Button ButtonNext,
-      @NonNull Button ButtonPrev, @NonNull Button SearchButton, @NonNull Button button5,
-      @NonNull Button button6, @NonNull TextView devsText, @NonNull TextView devsText2,
-      @NonNull TextView header, @NonNull LinearLayout linearLayout, @NonNull TextView macLayout,
-      @NonNull TextView nameLayout, @NonNull TextView textView) {
+      @NonNull Button ButtonPrev, @NonNull Button SearchButton, @NonNull TextView devsText,
+      @NonNull TextView devsText2, @NonNull TextView headerFirst,
+      @NonNull LinearLayout linearLayout, @NonNull ListView listViewDevices,
+      @NonNull Button sendPingButton, @NonNull TextView textView) {
     this.rootView = rootView;
     this.ButtonNext = ButtonNext;
     this.ButtonPrev = ButtonPrev;
     this.SearchButton = SearchButton;
-    this.button5 = button5;
-    this.button6 = button6;
     this.devsText = devsText;
     this.devsText2 = devsText2;
-    this.header = header;
+    this.headerFirst = headerFirst;
     this.linearLayout = linearLayout;
-    this.macLayout = macLayout;
-    this.nameLayout = nameLayout;
+    this.listViewDevices = listViewDevices;
+    this.sendPingButton = sendPingButton;
     this.textView = textView;
   }
 
@@ -122,18 +115,6 @@ public final class BluetoothBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.button5;
-      Button button5 = ViewBindings.findChildViewById(rootView, id);
-      if (button5 == null) {
-        break missingId;
-      }
-
-      id = R.id.button6;
-      Button button6 = ViewBindings.findChildViewById(rootView, id);
-      if (button6 == null) {
-        break missingId;
-      }
-
       id = R.id.devsText;
       TextView devsText = ViewBindings.findChildViewById(rootView, id);
       if (devsText == null) {
@@ -146,9 +127,9 @@ public final class BluetoothBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.header;
-      TextView header = ViewBindings.findChildViewById(rootView, id);
-      if (header == null) {
+      id = R.id.header_first;
+      TextView headerFirst = ViewBindings.findChildViewById(rootView, id);
+      if (headerFirst == null) {
         break missingId;
       }
 
@@ -158,15 +139,15 @@ public final class BluetoothBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.macLayout;
-      TextView macLayout = ViewBindings.findChildViewById(rootView, id);
-      if (macLayout == null) {
+      id = R.id.listViewDevices;
+      ListView listViewDevices = ViewBindings.findChildViewById(rootView, id);
+      if (listViewDevices == null) {
         break missingId;
       }
 
-      id = R.id.nameLayout;
-      TextView nameLayout = ViewBindings.findChildViewById(rootView, id);
-      if (nameLayout == null) {
+      id = R.id.sendPingButton;
+      Button sendPingButton = ViewBindings.findChildViewById(rootView, id);
+      if (sendPingButton == null) {
         break missingId;
       }
 
@@ -177,7 +158,7 @@ public final class BluetoothBinding implements ViewBinding {
       }
 
       return new BluetoothBinding((ConstraintLayout) rootView, ButtonNext, ButtonPrev, SearchButton,
-          button5, button6, devsText, devsText2, header, linearLayout, macLayout, nameLayout,
+          devsText, devsText2, headerFirst, linearLayout, listViewDevices, sendPingButton,
           textView);
     }
     String missingId = rootView.getResources().getResourceName(id);

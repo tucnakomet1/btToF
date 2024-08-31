@@ -4,8 +4,16 @@
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/drawable_file.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/drawable/file.xml"
+    },
+    {
         "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/xml_data_extraction_rules.xml.flat",
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.main.rpbt.app-merged_res-63:/layout_bluetooth.xml.flat",
+        "source": "com.main.rpbt.app-main-65:/layout/bluetooth.xml"
     },
     {
         "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/mipmap-hdpi_ic_launcher.webp.flat",
@@ -20,8 +28,28 @@
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/activity_main.xml"
     },
     {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/drawable_arrow_right.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/drawable/arrow_right.xml"
+    },
+    {
         "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/mipmap-mdpi_ic_launcher.webp.flat",
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/layout_list_item.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/list_item.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/layout_camera_player_item.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/camera_player_item.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/drawable_button_next_prev_etc.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/drawable/button_next_prev_etc.xml"
+    },
+    {
+        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/layout_list_item_bt_device.xml.flat",
+        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/list_item_bt_device.xml"
     },
     {
         "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/navigation_nav_graph.xml.flat",
@@ -84,15 +112,7 @@
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/content_main.xml"
     },
     {
-        "merged": "com.main.rpbt.app-merged_res-63:/navigation_nav_graph.xml.flat",
-        "source": "com.main.rpbt.app-main-65:/navigation/nav_graph.xml"
-    },
-    {
         "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
         "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/mipmap-xxhdpi/ic_launcher_round.webp"
-    },
-    {
-        "merged": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-merged_res-63:/layout_bitmap.xml.flat",
-        "source": "/home/tucna/.gradle/daemon/8.0/com.main.rpbt.app-main-65:/layout/bitmap.xml"
     }
 ]

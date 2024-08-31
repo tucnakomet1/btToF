@@ -4,13 +4,16 @@ package com.main.rpbt.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.main.rpbt.R;
@@ -23,6 +26,9 @@ public final class FragmentSecondBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final Button ButtonLoad;
+
+  @NonNull
   public final Button ButtonNext;
 
   @NonNull
@@ -32,10 +38,22 @@ public final class FragmentSecondBinding implements ViewBinding {
   public final Button ButtonPrev;
 
   @NonNull
+  public final Button ButtonRecordStop;
+
+  @NonNull
+  public final AutoCompleteTextView autoCompleteTextLeft;
+
+  @NonNull
+  public final AutoCompleteTextView autoCompleteTextRight;
+
+  @NonNull
   public final ImageView cameraView;
 
   @NonNull
   public final TextView counterTxt;
+
+  @NonNull
+  public final SeekBar fpsBar;
 
   @NonNull
   public final TextView headerFirst;
@@ -46,19 +64,57 @@ public final class FragmentSecondBinding implements ViewBinding {
   @NonNull
   public final LinearLayout linearLayout3;
 
-  private FragmentSecondBinding(@NonNull ConstraintLayout rootView, @NonNull Button ButtonNext,
-      @NonNull Button ButtonPlayPause, @NonNull Button ButtonPrev, @NonNull ImageView cameraView,
-      @NonNull TextView counterTxt, @NonNull TextView headerFirst,
-      @NonNull LinearLayout linearLayout2, @NonNull LinearLayout linearLayout3) {
+  @NonNull
+  public final LinearLayout linearLayoutLeftRight;
+
+  @NonNull
+  public final LinearLayout linearLayoutRecordPlay;
+
+  @NonNull
+  public final TextView progressFPS;
+
+  @NonNull
+  public final TextView textNoRecords;
+
+  @NonNull
+  public final TextView textView2;
+
+  @NonNull
+  public final RecyclerView videoHistoryRecyclerView;
+
+  @NonNull
+  public final View view2;
+
+  private FragmentSecondBinding(@NonNull ConstraintLayout rootView, @NonNull Button ButtonLoad,
+      @NonNull Button ButtonNext, @NonNull Button ButtonPlayPause, @NonNull Button ButtonPrev,
+      @NonNull Button ButtonRecordStop, @NonNull AutoCompleteTextView autoCompleteTextLeft,
+      @NonNull AutoCompleteTextView autoCompleteTextRight, @NonNull ImageView cameraView,
+      @NonNull TextView counterTxt, @NonNull SeekBar fpsBar, @NonNull TextView headerFirst,
+      @NonNull LinearLayout linearLayout2, @NonNull LinearLayout linearLayout3,
+      @NonNull LinearLayout linearLayoutLeftRight, @NonNull LinearLayout linearLayoutRecordPlay,
+      @NonNull TextView progressFPS, @NonNull TextView textNoRecords, @NonNull TextView textView2,
+      @NonNull RecyclerView videoHistoryRecyclerView, @NonNull View view2) {
     this.rootView = rootView;
+    this.ButtonLoad = ButtonLoad;
     this.ButtonNext = ButtonNext;
     this.ButtonPlayPause = ButtonPlayPause;
     this.ButtonPrev = ButtonPrev;
+    this.ButtonRecordStop = ButtonRecordStop;
+    this.autoCompleteTextLeft = autoCompleteTextLeft;
+    this.autoCompleteTextRight = autoCompleteTextRight;
     this.cameraView = cameraView;
     this.counterTxt = counterTxt;
+    this.fpsBar = fpsBar;
     this.headerFirst = headerFirst;
     this.linearLayout2 = linearLayout2;
     this.linearLayout3 = linearLayout3;
+    this.linearLayoutLeftRight = linearLayoutLeftRight;
+    this.linearLayoutRecordPlay = linearLayoutRecordPlay;
+    this.progressFPS = progressFPS;
+    this.textNoRecords = textNoRecords;
+    this.textView2 = textView2;
+    this.videoHistoryRecyclerView = videoHistoryRecyclerView;
+    this.view2 = view2;
   }
 
   @Override
@@ -88,6 +144,12 @@ public final class FragmentSecondBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.ButtonLoad;
+      Button ButtonLoad = ViewBindings.findChildViewById(rootView, id);
+      if (ButtonLoad == null) {
+        break missingId;
+      }
+
       id = R.id.ButtonNext;
       Button ButtonNext = ViewBindings.findChildViewById(rootView, id);
       if (ButtonNext == null) {
@@ -106,6 +168,24 @@ public final class FragmentSecondBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.ButtonRecordStop;
+      Button ButtonRecordStop = ViewBindings.findChildViewById(rootView, id);
+      if (ButtonRecordStop == null) {
+        break missingId;
+      }
+
+      id = R.id.auto_complete_text_left;
+      AutoCompleteTextView autoCompleteTextLeft = ViewBindings.findChildViewById(rootView, id);
+      if (autoCompleteTextLeft == null) {
+        break missingId;
+      }
+
+      id = R.id.auto_complete_text_right;
+      AutoCompleteTextView autoCompleteTextRight = ViewBindings.findChildViewById(rootView, id);
+      if (autoCompleteTextRight == null) {
+        break missingId;
+      }
+
       id = R.id.cameraView;
       ImageView cameraView = ViewBindings.findChildViewById(rootView, id);
       if (cameraView == null) {
@@ -115,6 +195,12 @@ public final class FragmentSecondBinding implements ViewBinding {
       id = R.id.counterTxt;
       TextView counterTxt = ViewBindings.findChildViewById(rootView, id);
       if (counterTxt == null) {
+        break missingId;
+      }
+
+      id = R.id.fpsBar;
+      SeekBar fpsBar = ViewBindings.findChildViewById(rootView, id);
+      if (fpsBar == null) {
         break missingId;
       }
 
@@ -136,8 +222,53 @@ public final class FragmentSecondBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentSecondBinding((ConstraintLayout) rootView, ButtonNext, ButtonPlayPause,
-          ButtonPrev, cameraView, counterTxt, headerFirst, linearLayout2, linearLayout3);
+      id = R.id.linearLayoutLeftRight;
+      LinearLayout linearLayoutLeftRight = ViewBindings.findChildViewById(rootView, id);
+      if (linearLayoutLeftRight == null) {
+        break missingId;
+      }
+
+      id = R.id.linearLayoutRecordPlay;
+      LinearLayout linearLayoutRecordPlay = ViewBindings.findChildViewById(rootView, id);
+      if (linearLayoutRecordPlay == null) {
+        break missingId;
+      }
+
+      id = R.id.progressFPS;
+      TextView progressFPS = ViewBindings.findChildViewById(rootView, id);
+      if (progressFPS == null) {
+        break missingId;
+      }
+
+      id = R.id.text_no_records;
+      TextView textNoRecords = ViewBindings.findChildViewById(rootView, id);
+      if (textNoRecords == null) {
+        break missingId;
+      }
+
+      id = R.id.textView2;
+      TextView textView2 = ViewBindings.findChildViewById(rootView, id);
+      if (textView2 == null) {
+        break missingId;
+      }
+
+      id = R.id.videoHistoryRecyclerView;
+      RecyclerView videoHistoryRecyclerView = ViewBindings.findChildViewById(rootView, id);
+      if (videoHistoryRecyclerView == null) {
+        break missingId;
+      }
+
+      id = R.id.view2;
+      View view2 = ViewBindings.findChildViewById(rootView, id);
+      if (view2 == null) {
+        break missingId;
+      }
+
+      return new FragmentSecondBinding((ConstraintLayout) rootView, ButtonLoad, ButtonNext,
+          ButtonPlayPause, ButtonPrev, ButtonRecordStop, autoCompleteTextLeft,
+          autoCompleteTextRight, cameraView, counterTxt, fpsBar, headerFirst, linearLayout2,
+          linearLayout3, linearLayoutLeftRight, linearLayoutRecordPlay, progressFPS, textNoRecords,
+          textView2, videoHistoryRecyclerView, view2);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -1,0 +1,139 @@
+{
+  "metadata": {
+    "timestamp": 1712237244.007645,
+    "description": "asdf",
+    "environment": "asphalt",
+    "sensor_type": "None",
+    "number_of_sensors": "None",
+    "position_of_sensors": "None",
+    "config": {
+      "com_port": "COM13",
+      "num_sensors": "1",
+      "size": "8x8",
+      "num_targets": "4",
+      "order": "closest",
+      "sharpener": "5",
+      "ambient_per_spad": "off",
+      "nb_spads_enabled": "off",
+      "nb_target_detected": "on",
+      "signal_per_spad": "off",
+      "range_sigma": "off",
+      "distance": "on",
+      "target_status": "on",
+      "reflectance_percent": "off",
+      "motion_indicator": "off",
+      "accel": "off",
+      "xtalk": "off",
+      "rotation": "0",
+      "flip": "none",
+      "fontsize": "0",
+      "colormap_min": "20",
+      "colormap_max": "2000"
+    },
+    "gestures": null
+  },
+  "recording": [
+    {
+      "ambient_per_spad": null,
+      "nb_spads_enabled": null,
+      "distance": [
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [
+            2250,
+            1435,
+            153
+          ],
+          [],
+          [],
+          [],
+          [
+            2649
+          ]
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            212
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [
+            100
+          ],
+          [
+            105
+          ],
+          [
+            107
+          ],
+          [
+            153
+          ],
+          [],
+          [],
+          [],
+          []
+        ]
+      ]
+    }
+  ]
+}
