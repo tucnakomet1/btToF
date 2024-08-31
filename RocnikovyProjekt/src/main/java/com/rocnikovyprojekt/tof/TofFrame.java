@@ -24,10 +24,10 @@ public class TofFrame {
         if (data instanceof FrameData)
             this.data = (FrameData) data;
         else if (data instanceof FrameDataInput)
-            this.data = ((FrameDataInput) data).toFrameData(size[2]);
-        else if (data instanceof Map)
-            this.data = FrameData.deserialize((Map<?, ?>) data, size[2]);
-        else
+            this.data = ((FrameDataInput) data).toFrameData();
+        else if (data instanceof Map) {
+            this.data = FrameData.deserialize((Map<?, ?>) data);
+        } else
             throw new IllegalArgumentException("Data must be of type FrameData, FrameDataInput, or Map<String, Object>");
     }
 
@@ -85,9 +85,8 @@ public class TofFrame {
 
     /** Method for deserializing the frame from a map
      * @param input map to deserialize
-     * @param numTargets number of targets
      * @return deserialized frame */
-    public static TofFrame deserialize(String input, int numTargets) {
+    public static TofFrame deserialize(String input) {
         // Convert from JSON string to map using JSONObject
         JSONObject jsonObject = new JSONObject(input);
         Map<String, Object> map = new HashMap<>();
@@ -95,7 +94,7 @@ public class TofFrame {
             map.put(key, jsonObject.get(key));
         }
 
-        FrameData data = FrameData.deserialize(map, numTargets);
+        FrameData data = FrameData.deserialize(map);
         int[] size = {data.getDistance().length, data.getDistance()[0].length};
         return new TofFrame(data, size, null);
     }
@@ -103,7 +102,7 @@ public class TofFrame {
     /** Method for getting the distance of the first target in each zone
      * @return distance of the first target in each zone */
     public double[][] getDistance() {
-        double[][][] distances = data.getDistance();
+        int[][][] distances = data.getDistance();
         double[][] firstTargets = new double[distances.length][distances[0].length];
         for (int i = 0; i < distances.length; i++) {
             for (int j = 0; j < distances[i].length; j++) {
@@ -115,7 +114,7 @@ public class TofFrame {
 
     /** Method for getting all targets
      * @return all targets */
-    public double[][][] getAllTargets() {
+    public int[][][] getAllTargets() {
         return data.getDistance();
     }
 }
