@@ -41,14 +41,23 @@ public class TofRecording {
 
         String filePath = Paths.get(SAVE_FOLDER, filename).toString();
         try (FileWriter outfile = new FileWriter(filePath)) {
-            List<String> toSave = new ArrayList<>();
+            List<JSONObject> toSave = new ArrayList<>();
 
             for (TofFrame item : recording) {
-                toSave.add(item.serialize().toString());
+                Map<String, Object> serializedItem = item.serialize();
+                JSONObject jsonObject = new JSONObject(serializedItem);
+
+                // if the item is null, add it to the JSONObject (library skips null values)
+                for (Map.Entry<String, Object> entry : serializedItem.entrySet()) {
+                    if (entry.getValue() == null)
+                        jsonObject.put(entry.getKey(), JSONObject.NULL);
+                }
+
+                toSave.add(jsonObject);
             }
 
             JSONObject out = new JSONObject();
-            out.put("metadata", new JSONObject(metadata));
+            out.put("metadata", new JSONObject(getMetadata()));
             out.put("recording", new JSONArray(toSave));
 
             outfile.write(out.toString());
@@ -116,7 +125,7 @@ public class TofRecording {
                 (String) metadataJson.get("sensor_type"),
                 (int) metadataJson.get("number_of_sensors"),
                 (List<?>) metadataJson.get("position_of_sensors"),
-                metadataJson.get("config"),
+                (Map<String, String>) metadataJson.get("config"),
                 metadataJson.get("gestures")
         );
     }
@@ -131,7 +140,7 @@ public class TofRecording {
                 (String) map.get("sensor_type"),
                 Integer.parseInt((String) map.get("number_of_sensors")),
                 List.of(((String) map.get("position_of_sensors")).split(",")),
-                map.get("config"),
+                (Map<String, String>) map.get("config"),
                 map.get("gestures")
         );
     }
@@ -146,7 +155,7 @@ public class TofRecording {
      * @param position_of_sensors position of sensors
      * @param config config
      * @param gestures gestures */
-    private void set_metadata(long timestamp, String description, String environment, String sensor_type, int number_of_sensors, List<?> position_of_sensors, Object config, Object gestures) {
+    private void set_metadata(long timestamp, String description, String environment, String sensor_type, int number_of_sensors, List<?> position_of_sensors, Map<String, String> config, Object gestures) {
         if (number_of_sensors == 0) number_of_sensors = 1;
 
         metadata.put("timestamp", timestamp);                       // timestamp: unixtimestamp

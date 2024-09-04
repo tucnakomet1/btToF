@@ -40,7 +40,7 @@ public class ConfigData {
 
     /** Get the configuration data of the object as a dictionary
      * @return configuration data */
-    public Map<String, String> getConfig() {
+    public static Map<String, String> getConfig() {
         Map<String, String> configData = new HashMap<>();
         configData.put("com_port", com_port);
         configData.put("num_sensors", num_sensors);

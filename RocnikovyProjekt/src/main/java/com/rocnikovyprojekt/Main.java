@@ -13,16 +13,16 @@ public class Main {
      * @param args command line arguments */
     public static void main(String[] args) {
         // get all available COM ports and check if there are any
-        /*GetCOM gc = new GetCOM();
+        GetCOM gc = new GetCOM();
         gc.CheckForPorts();
 
         // start the ToF sensor stream
         TofFunc func = new TofFunc(gc.getPorts()[0][0]);
-        //func.start_stream();
-        func.record_stream();*/
+        func.start_stream();
+        //func.record_stream(true);
 
         // bluetooth connection
-        new BluetoothServer();
+        //new BluetoothServer();
     }
 
 }

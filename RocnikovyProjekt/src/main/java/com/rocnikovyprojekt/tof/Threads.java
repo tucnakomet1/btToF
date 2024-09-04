@@ -2,11 +2,11 @@ package com.rocnikovyprojekt.tof;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.rocnikovyprojekt.utils.ConfigData;
+import com.rocnikovyprojekt.utils.Event;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 
@@ -24,13 +24,19 @@ public class Threads {
     private static ConfigData config;
     private static Map<String, Object[]> parser;
 
+    private static Event e_recording;
+    private static TofRecording tof_recording;
+
+
 
     /** Constructor
      * @param port COM port
      * @param config configuration data */
-    public Threads(SerialPort port, ConfigData config) {
+    public Threads(SerialPort port, ConfigData config, Event e_recording, TofRecording tof_recording) {
         Threads.port = port;
         Threads.config = config;
+        Threads.e_recording = e_recording;
+        Threads.tof_recording = tof_recording;
 
         parser = get_parser_dict(config);       // Map<String, Object[]>
         printParser(parser);
@@ -38,21 +44,71 @@ public class Threads {
 
     /** Run the thread
      * TODO: make run as a thread method*/
+
     public void run() {
         // stops after 5 seconds
-        long end = System.currentTimeMillis() + 3000;
+        long current = 10000;
+        long end = System.currentTimeMillis() + current;
+        int i = 0;
 
-        while (end - System.currentTimeMillis() > 0) {
-            System.out.println(end - System.currentTimeMillis());
+        while (current > 0) {
+            current = end - System.currentTimeMillis();
+
+            // wait for 70ms - 14 frames per second, it's because of the sensor is not able to send more frames
+            System.out.println("Time: " + current);
+
             TofFrame frame = readFrame();
+            i++;
             logger.info("frame" + frame);
+
+            recording(frame);
+
+            try {
+                Thread.sleep(50); // 50 milisekund = 1/20 sekundy
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        recording_end();
         logger.info("\t\tStop thread!\t\t");
+        logger.info("Number of frames: " + i);
+    }
+
+    private TofFrame waitForFrame(long time) {
+        TofFrame frame = null;
+
+        // Dynamické čekání na data
+        while (frame == null) {
+            frame = readFrame(); // Pokus o načtení snímku
+
+            if (isFrameEmpty(frame)) { // Kontrola, zda snímek obsahuje data
+                System.out.println("\n\nit is, fuck");
+                frame = null;
+
+                //if (time % 5 == 0)
+                try {
+                    Thread.sleep(300); // Krátké zpoždění před dalším pokusem o načtení snímku
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.warning("Thread was interrupted, Failed to complete operation");
+                }
+            }
+        }
+        return frame;
+    }
+
+    private boolean isFrameEmpty(TofFrame frame) {
+        // Jednoduchá kontrola, zda snímek obsahuje platná data
+        // (Implementace závisí na struktuře TofFrame; zde je to jen základní kontrola)
+        return frame == null || frame.getData().isEmpty();
     }
 
     /** Read a frame from the sensor - get the data
      * @return TofFrame */
     public TofFrame readFrame() {
+        // Flush the buffer before starting to read a new frame
+        //port.flushIOBuffers();
+
         int[] res;
         LinkedList<Byte> syncFifo = new LinkedList<>();
         byte[] buffer = new byte[1];
@@ -81,20 +137,24 @@ public class Threads {
             }
         }
 
-        System.out.println("Synced! The resolution is: " + res[0] + "x" + res[1]);
+        return processFrame(res);
+    }
+
+    private TofFrame processFrame(int[] res) {
+        parser = get_parser_dict(config);
 
         // Read the frame data
         Map<String, Object> data = new HashMap<>();
 
         if (res[0] - res[1] == 0) {         // if res is [4,4] or [8,8]
             data = grabFrame(parser);
+            System.out.println("Data: " + data);
 
             if ("on".equals(config.getAccel()))
                 data.put("accel", grabAccel());
 
             int[][][] sensorIDList = (int[][][]) data.remove("sensor_ID");
             return new TofFrame(data, res, sensorIDList[0][0][0]);
-
         } else {
             Map<String, Object> data1 = grabFrame(parser);
             Map<String, Object> data2 = grabFrame(parser);
@@ -108,6 +168,59 @@ public class Threads {
                 data.put(entry.getKey(), concatenateData(entry.getValue(), data2.get(entry.getKey())));
             }
             return new TofFrame(data, res, sensorIDs);
+        }
+    }
+
+    /** Record the frame
+     * gets the frame, saves it to the buffer
+     * @param frame frame to be recorded */
+    public void recording(TofFrame frame) {
+        if (!tof_recording.add(frame)) {
+            logger.info("ERROR\nrecording\nrecording buffer is full => saving");
+            recording_end();
+        }
+    }
+
+    /** Stop the recording
+     *  if recording is on -> stop it and save the result */
+    public void recording_end() {
+        e_recording.clear();
+        logger.info("Recording stopped!");
+        recording_save();
+    }
+
+    /** Save the recording from the buffer to the file */
+    public void recording_save() {
+        // TODO: get these info from the user
+        String description = "description";
+        String environment = "environment";
+        String sensor_type = "sensor type";
+        String number_of_sensors = "1";
+        String position_of_sensors = "position of sensors";
+
+        Map<String, String> ssMap = new java.util.HashMap<>();
+        ssMap.put("description", description);
+        ssMap.put("environment", environment);
+        ssMap.put("sensor_type", sensor_type);
+        ssMap.put("number_of_sensors", number_of_sensors);
+        ssMap.put("position_of_sensors", position_of_sensors);
+        Map<String, Object> metadata_new = new java.util.HashMap<>(ssMap);
+
+        metadata_new.put("config", ConfigData.getConfig());
+        metadata_new.put("timestamp", System.currentTimeMillis());
+
+        logger.info("metadata_new: " + metadata_new);
+
+        String filename = "data" + System.currentTimeMillis() + ".json";
+
+        tof_recording.set_metadata(metadata_new);       // nastavi metadata
+        try {
+            tof_recording.to_json(filename);             // ulozi zaznam do souboru
+            int numFrames = tof_recording.getRecordingNumber();    // zjisti pocet snimku
+            logger.info("recording saved \t" + numFrames);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warning("ERROR - couldn't save recording");
         }
     }
 
@@ -153,7 +266,6 @@ public class Threads {
             port.readBytes(buffer, 2);  // Read 2 bytes per axis
             accelData[i] = bytesToSignedInt(buffer);
         }
-
         return accelData;
     }
 
@@ -203,11 +315,10 @@ public class Threads {
                 }
                 int[] intArray = values.stream().mapToInt(Integer::intValue).toArray();
 
-                 System.out.println("Int array: " + Arrays.toString(intArray));
+                System.out.println("Int array: " + Arrays.toString(intArray));
 
                 // Reshape the data into a multi-dimensional array
-                int[][][] reshapedArray = reshape(intArray, (int[]) value[1]);
-                data.put(key, reshapedArray);
+                data.put(key, reshape(intArray, (int[]) value[1]));
             }
         }
 
