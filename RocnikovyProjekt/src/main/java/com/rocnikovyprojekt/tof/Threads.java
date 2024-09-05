@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.rocnikovyprojekt.utils.ConfigData;
 import com.rocnikovyprojekt.utils.Event;
 
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -26,17 +27,19 @@ public class Threads {
 
     private static Event e_recording;
     private static TofRecording tof_recording;
+    private static PrintWriter writer;
 
 
 
     /** Constructor
      * @param port COM port
      * @param config configuration data */
-    public Threads(SerialPort port, ConfigData config, Event e_recording, TofRecording tof_recording) {
+    public Threads(SerialPort port, ConfigData config, Event e_recording, TofRecording tof_recording, PrintWriter writer) {
         Threads.port = port;
         Threads.config = config;
         Threads.e_recording = e_recording;
         Threads.tof_recording = tof_recording;
+        Threads.writer = writer;
 
         parser = get_parser_dict(config);       // Map<String, Object[]>
         printParser(parser);
@@ -45,63 +48,42 @@ public class Threads {
     /** Run the thread
      * TODO: make run as a thread method*/
 
-    public void run() {
-        // stops after 5 seconds
-        long current = 10000;
+    public void run(boolean isRecording) {
+        // stops after 3 seconds
+        //long current = 3000;
+        long current = 10000000;
         long end = System.currentTimeMillis() + current;
         int i = 0;
 
         while (current > 0) {
             current = end - System.currentTimeMillis();
 
-            // wait for 70ms - 14 frames per second, it's because of the sensor is not able to send more frames
-            System.out.println("Time: " + current);
 
             TofFrame frame = readFrame();
+            //System.out.println("Frame: " + frame);
+            if (writer != null) {
+                writer.println(Arrays.deepToString(frame.getDistance()));
+                writer.flush();
+            }
             i++;
-            logger.info("frame" + frame);
 
-            recording(frame);
+            if (isRecording)
+                recording(frame);
+
+            // wait for 50ms - 20 frames per second, it's because of the sensor is not able to send more frames
 
             try {
-                Thread.sleep(50); // 50 milisekund = 1/20 sekundy
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        recording_end();
+        if (isRecording)
+            recording_end();
         logger.info("\t\tStop thread!\t\t");
         logger.info("Number of frames: " + i);
     }
 
-    private TofFrame waitForFrame(long time) {
-        TofFrame frame = null;
-
-        // Dynamické čekání na data
-        while (frame == null) {
-            frame = readFrame(); // Pokus o načtení snímku
-
-            if (isFrameEmpty(frame)) { // Kontrola, zda snímek obsahuje data
-                System.out.println("\n\nit is, fuck");
-                frame = null;
-
-                //if (time % 5 == 0)
-                try {
-                    Thread.sleep(300); // Krátké zpoždění před dalším pokusem o načtení snímku
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    logger.warning("Thread was interrupted, Failed to complete operation");
-                }
-            }
-        }
-        return frame;
-    }
-
-    private boolean isFrameEmpty(TofFrame frame) {
-        // Jednoduchá kontrola, zda snímek obsahuje platná data
-        // (Implementace závisí na struktuře TofFrame; zde je to jen základní kontrola)
-        return frame == null || frame.getData().isEmpty();
-    }
 
     /** Read a frame from the sensor - get the data
      * @return TofFrame */
@@ -148,7 +130,6 @@ public class Threads {
 
         if (res[0] - res[1] == 0) {         // if res is [4,4] or [8,8]
             data = grabFrame(parser);
-            System.out.println("Data: " + data);
 
             if ("on".equals(config.getAccel()))
                 data.put("accel", grabAccel());
@@ -260,7 +241,6 @@ public class Threads {
     private int[] grabAccel() {
         int[] accelData = new int[3];
 
-        System.out.println("Grab!");
         for (int i = 0; i < 3; i++) {
             byte[] buffer = new byte[2];
             port.readBytes(buffer, 2);  // Read 2 bytes per axis
@@ -315,7 +295,7 @@ public class Threads {
                 }
                 int[] intArray = values.stream().mapToInt(Integer::intValue).toArray();
 
-                System.out.println("Int array: " + Arrays.toString(intArray));
+                //System.out.println("Int array: " + Arrays.toString(intArray));
 
                 // Reshape the data into a multi-dimensional array
                 data.put(key, reshape(intArray, (int[]) value[1]));
@@ -330,7 +310,7 @@ public class Threads {
      * @param shape shape array
      * @return Object */
     private int[][][] reshape(int[] data, int[] shape) {
-        System.out.println("Reshape: " + Arrays.toString(shape));
+        //System.out.println("Reshape: " + Arrays.toString(shape));
         int rows = shape[0];
         int cols = shape[1];
         int depth = shape[2];

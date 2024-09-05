@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.rocnikovyprojekt.utils.ConfigData;
 import com.rocnikovyprojekt.utils.Event;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -63,11 +64,11 @@ public class TofFunc {
         if (e_recording.isSet())
             recording_end();
         else
-            recording_start(true);
+            recording_start(true, null);
     }
 
     /** Start the ToF sensor stream - open the COM port and start the thread */
-    public void start_stream() {
+    public void start_stream(PrintWriter writer) {
         try {
             if (port.openPort()) {
                 byte[] initMsg = configData.getInitMsg();
@@ -76,14 +77,15 @@ public class TofFunc {
 
                 // send the initialization message to the sensor
                 port.writeBytes(initMsg, initMsg.length);
-                recording_start(false);
+                recording_start(false, writer);
             } else {
                 logger.warning("Port not opened");
             }
 
             // TODO: start the thread
-            Threads th = new Threads(port, configData, e_recording, tof_recording);
-            th.run();
+            Threads th = new Threads(port, configData, e_recording, tof_recording, writer);
+            System.out.println("here");
+            th.run(false);
 
             logger.info("stream started");
         } catch (Exception e) {
@@ -96,7 +98,7 @@ public class TofFunc {
     }
 
     /** Start the recording */
-    public void recording_start(boolean stream) {
+    public void recording_start(boolean recording, PrintWriter writer) {
         if (port.openPort()) {
             byte[] initMsg = configData.getInitMsg();
 
@@ -115,13 +117,14 @@ public class TofFunc {
         e_recording.set();
         System.out.println("\nrecording...");
 
-        if (stream) {
-            Threads th = new Threads(port, configData, e_recording, tof_recording);
-            //TofFrame frame = th.readFrame();
+        if (recording) {
+            Threads th = new Threads(port, configData, e_recording, tof_recording, writer);
+            TofFrame frame = th.readFrame();
             //logger.info("frame1 " + frame);
-            //recording(frame);
+            recording(frame);
+
             recording_end();
-            System.out.println("Ended");
+            //System.out.println("Ended");
         }
     }
 

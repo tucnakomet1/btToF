@@ -1,7 +1,6 @@
 package com.rocnikovyprojekt.utils;
 
 import com.fazecast.jSerialComm.SerialPort;
-
 import java.util.logging.Logger;
 
 /** Get all available COM ports. */
@@ -41,15 +40,12 @@ public class GetCOM {
      */
     private static String[][] getUnixCOM() {
         SerialPort[] ports = SerialPort.getCommPorts();
-        String[][] allPorts = new String[][]{new String[ports.length]};
+        String[][] allPorts = new String[ports.length][ports.length];
 
         int i = 0;
         for (SerialPort port : ports) {
             String[] portInfo = {port.getSystemPortPath(), port.getDescriptivePortName(), port.getPortDescription()};
             allPorts[i++] = portInfo;
-        }
-        for (String[] p : allPorts) {
-            logger.info("Port: " + p[0] + " (" + p[1] + ", " + p[2] + ")");
         }
 
         return allPorts;

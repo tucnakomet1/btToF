@@ -5,7 +5,7 @@
     "distance": "on",
     "ambient_per_spad": "off",
     "rotation": "0",
-    "com_port": "/dev/ttyACM0",
+    "com_port": "/dev/ttyACM1",
     "nb_spads_enabled": "off",
     "fontsize": "0",
     "accel": "off",
