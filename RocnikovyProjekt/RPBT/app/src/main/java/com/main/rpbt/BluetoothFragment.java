@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.main.rpbt.databinding.BluetoothBinding;
+import com.main.rpbt.lan.LanClient;
 import com.main.rpbt.util.DeviceListAdapter;
 
 import java.io.IOException;
@@ -110,6 +111,7 @@ public class BluetoothFragment extends Fragment {
         binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(BluetoothFragment.this)
                 .navigate(R.id.action_BluetoothFragment_to_SecondFragment));
         binding.SearchButton.setOnClickListener(v -> {
+
             fillConnectedDevice();
             scanDevices();
         });

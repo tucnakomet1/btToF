@@ -30,21 +30,41 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.main.rpbt.databinding.FragmentSecondBinding;
+import com.main.rpbt.lan.LanClient;
 import com.main.rpbt.util.ColorConfig;
 import com.main.rpbt.util.FileHelper;
 import com.main.rpbt.util.RecyclerViewAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SecondFragment extends Fragment {
+
+    private Socket socket;
+    private PrintWriter writer;
+    private BufferedReader reader;
+    private TextView textViewOutput;
+    private ExecutorService executorService;
+    private boolean isConnected = false;
+    private boolean isStreaming = false;
+
+    // rest
 
     private ActivityResultLauncher<String> filePicker;
     private FragmentSecondBinding binding;
@@ -71,6 +91,9 @@ public class SecondFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         binding = FragmentSecondBinding.inflate(inflater, container, false);
+
+        executorService = Executors.newFixedThreadPool(2);  // connection
+        executorService.execute(this::connectToServer);
 
         binding.fpsBar.setProgress(SettingsValues.getFPS());
         binding.progressFPS.setText(String.valueOf(SettingsValues.getFPS()));
@@ -179,6 +202,7 @@ public class SecondFragment extends Fragment {
                 recordStop.setText("Record");
             } else {
                 isRecording = true;
+                toggleStream();
                 recordStop.setText("Stop");
             }
         });
@@ -240,6 +264,7 @@ public class SecondFragment extends Fragment {
                 fileName = arr_names_sizes.get(position)[0];
                 frames = JsonParser.loadDataFromJson(requireContext(), GRID_SIZE, fileName);
                 distanceFrames = frames.get("distance");
+                System.out.println("Distance frames:\n\n\n\n\n" + Arrays.deepToString(distanceFrames.get(0)) + "\n\n\n\n\n");
                 currentFrameIndex = 0;
             };
 
@@ -296,6 +321,7 @@ public class SecondFragment extends Fragment {
             handler = new Handler(Looper.getMainLooper());
             frames = JsonParser.loadDataFromJson(requireContext(), GRID_SIZE, fileName);
             distanceFrames = frames.get("distance");
+
         }
 
     }
@@ -310,8 +336,9 @@ public class SecondFragment extends Fragment {
 
 
     // sets bitmap from JSON and iterate
-    private void SetColors() {
+    private void SetColors(double[][] ownFrames) {
         double[][] currentDistanceFrame = distanceFrames.get(currentFrameIndex);
+        if (ownFrames != null) currentDistanceFrame = ownFrames;
 
         double[][] currentLeftFrame = null;
         if (!leftTab.equals("none"))
@@ -324,8 +351,10 @@ public class SecondFragment extends Fragment {
         Bitmap heatmapBitmap = colorConfig.createHeatmapBitmap(GRID_SIZE, CELL_SIZE, currentDistanceFrame, currentLeftFrame, currentRightFrame, leftTab, rightTab);
         CameraView.setImageBitmap(heatmapBitmap);
 
-        currentFrameIndex = (currentFrameIndex + 1) % distanceFrames.size();
-        counterText.setText(String.valueOf(currentFrameIndex));
+        if (ownFrames == null) {
+            currentFrameIndex = (currentFrameIndex + 1) % distanceFrames.size();
+            counterText.setText(String.valueOf(currentFrameIndex));
+        }
     }
 
     // runnable for running frames depending on FPS
@@ -334,7 +363,7 @@ public class SecondFragment extends Fragment {
         public void run() {
             if (!distanceFrames.isEmpty()) {
                 scheduler = Executors.newScheduledThreadPool(4);
-                Runnable setPixelsTask = () -> handler.post(() -> SetColors());
+                Runnable setPixelsTask = () -> handler.post(() -> SetColors(null));
                 scheduler.scheduleAtFixedRate(setPixelsTask, 0, 1000 / SettingsValues.getFPS(), TimeUnit.MILLISECONDS);
             }
         }
@@ -345,5 +374,72 @@ public class SecondFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        executorService.shutdown();
+    }
+
+
+    // Connect to server
+
+    private void connectToServer() {
+        try {
+            socket = new Socket("192.168.0.47", 8080); // Nahraď IP serveru
+            writer = new PrintWriter(socket.getOutputStream(), true);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            if (distanceFrames != null) distanceFrames.clear();
+            isConnected = true;
+            listenForServerMessages(); // Start listening for messages from the server
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void listenForServerMessages() {
+        try {
+            String message;
+            while ((message = reader.readLine()) != null) {
+                if (message.contains("[")) {
+                    SetColors(makeDistantFramesFromString(message));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Cast String in format "[[int], [int], ...]" into int[][] array
+    private double[][] makeDistantFramesFromString(String message) {
+        JSONArray jsonArray;
+        double[][] frame;
+        try {
+            jsonArray = new JSONArray(message);
+            frame = new double[jsonArray.length()][jsonArray.getJSONArray(0).length()];
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONArray innerArray = jsonArray.getJSONArray(i);
+                for (int j = 0; j < innerArray.length(); j++) {
+                    frame[i][j] = innerArray.getDouble(j);
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        return frame;
+    }
+
+    private void toggleStream() {
+        if (isConnected) {
+            isStreaming = !isStreaming;
+            executorService.execute(() -> writer.println("stream"));
+        }
     }
 }
