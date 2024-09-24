@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package cz.ima.btTof;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -11,7 +11,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.main.rpbt.databinding.ActivityMainBinding;
+import cz.ima.btTof.databinding.ActivityMainBinding;
 
 /**
  * Main activity for the app
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.READ_EXTERNAL_STORAGE},
                 PackageManager.PERMISSION_GRANTED);
 
-        com.main.rpbt.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

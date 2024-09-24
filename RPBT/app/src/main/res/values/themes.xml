@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.RPBT" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.btTof" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -14,7 +14,7 @@
         <!-- Text black/ white -->
     </style>
     <!-- Base application theme. -->
-    <style name="Base.Theme.RPBT" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.btTof" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="buttonStyle">@style/CustomButtonStyle</item>

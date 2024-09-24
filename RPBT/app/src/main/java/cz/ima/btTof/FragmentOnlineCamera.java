@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package cz.ima.btTof;
 
 
 import android.annotation.SuppressLint;
@@ -21,9 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.main.rpbt.databinding.FragmentCameraBinding;
-import com.main.rpbt.lan.LanClient;
-import com.main.rpbt.util.ColorConfig;
+import cz.ima.btTof.databinding.FragmentCameraBinding;
+import cz.ima.btTof.lan.LanClient;
+import cz.ima.btTof.util.ColorConfig;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.main.rpbt.util;
+package cz.ima.btTof.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
-import com.main.rpbt.SettingsValues;
+import cz.ima.btTof.SettingsValues;
 
 import org.json.JSONObject;
 

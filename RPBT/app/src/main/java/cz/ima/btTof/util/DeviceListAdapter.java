@@ -1,4 +1,4 @@
-package com.main.rpbt.util;
+package cz.ima.btTof.util;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.main.rpbt.R;
+import cz.ima.btTof.R;
 
 import java.util.ArrayList;
 

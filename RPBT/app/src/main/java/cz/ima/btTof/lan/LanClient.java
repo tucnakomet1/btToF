@@ -1,4 +1,4 @@
-package com.main.rpbt.lan;
+package cz.ima.btTof.lan;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import com.main.rpbt.util.FileHelper;
+import cz.ima.btTof.util.FileHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

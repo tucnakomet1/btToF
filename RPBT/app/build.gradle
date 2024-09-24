@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.main.rpbt'
+    namespace 'cz.ima.btTof'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.main.rpbt"
+        applicationId "cz.ima.btTof"
         minSdk 24
         targetSdk 33
         versionCode 1

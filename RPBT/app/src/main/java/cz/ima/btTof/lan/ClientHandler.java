@@ -1,9 +1,9 @@
-package com.main.rpbt.lan;
+package cz.ima.btTof.lan;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 
-import com.main.rpbt.util.FileHelper;
+import cz.ima.btTof.util.FileHelper;
 
 import java.io.BufferedReader;
 import java.io.File;

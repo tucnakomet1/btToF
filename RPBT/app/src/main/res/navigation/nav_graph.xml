@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/SettingsFragment"
-        android:name="com.main.rpbt.fragments.FragmentSettings"
+        android:name="cz.ima.btTof.fragments.FragmentSettings"
         android:label=""
         tools:layout="@layout/fragment_settings">
 
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/PlayerOfflineFragment"
-        android:name="com.main.rpbt.fragments.FragmentOfflinePlayer"
+        android:name="cz.ima.btTof.fragments.FragmentOfflinePlayer"
         android:label=""
         tools:layout="@layout/fragment_offline_player">
         <action
@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/CameraOnlineFragment"
-        android:name="com.main.rpbt.FragmentOnlineCamera"
+        android:name="cz.ima.btTof.FragmentOnlineCamera"
         android:label=""
         tools:layout="@layout/fragment_camera">
         <action
@@ -47,7 +47,7 @@
 
     <fragment
         android:id="@+id/BluetoothFragment"
-        android:name="com.main.rpbt.fragments.FragmentBluetooth"
+        android:name="cz.ima.btTof.fragments.FragmentBluetooth"
         android:label=""
         tools:layout="@layout/fragment_bluetooth">
         <action

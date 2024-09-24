@@ -1,4 +1,4 @@
-package com.main.rpbt.fragments;
+package cz.ima.btTof.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,10 +12,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.tabs.TabLayout;
-import com.main.rpbt.R;
-import com.main.rpbt.SettingsValues;
-import com.main.rpbt.databinding.FragmentSettingsBinding;
-import com.main.rpbt.util.SaveConfig;
+import cz.ima.btTof.R;
+import cz.ima.btTof.SettingsValues;
+import cz.ima.btTof.databinding.FragmentSettingsBinding;
+import cz.ima.btTof.util.SaveConfig;
 
 import java.util.Objects;
 

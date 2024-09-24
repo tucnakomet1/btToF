@@ -1,4 +1,4 @@
-package com.main.rpbt.util;
+package cz.ima.btTof.util;
 
 import android.content.Context;
 

@@ -1,4 +1,4 @@
-package com.main.rpbt.util;
+package cz.ima.btTof.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.main.rpbt.R;
+import cz.ima.btTof.R;
 
 import java.util.ArrayList;
 

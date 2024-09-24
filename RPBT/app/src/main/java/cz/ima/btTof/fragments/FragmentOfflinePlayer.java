@@ -1,4 +1,4 @@
-package com.main.rpbt.fragments;
+package cz.ima.btTof.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -28,13 +28,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.main.rpbt.util.JsonParser;
-import com.main.rpbt.R;
-import com.main.rpbt.SettingsValues;
-import com.main.rpbt.databinding.FragmentOfflinePlayerBinding;
-import com.main.rpbt.util.ColorConfig;
-import com.main.rpbt.util.FileHelper;
-import com.main.rpbt.util.RecyclerViewAdapter;
+import cz.ima.btTof.util.JsonParser;
+import cz.ima.btTof.R;
+import cz.ima.btTof.SettingsValues;
+import cz.ima.btTof.databinding.FragmentOfflinePlayerBinding;
+import cz.ima.btTof.util.ColorConfig;
+import cz.ima.btTof.util.FileHelper;
+import cz.ima.btTof.util.RecyclerViewAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -243,6 +243,9 @@ public class FragmentOfflinePlayer extends Fragment {
             binding.textNoRecords.setText("No records!");
             binding.textNoRecords.setTextSize(20);
             binding.videoHistoryRecyclerView.setVisibility(View.INVISIBLE);
+
+            handler = new Handler(Looper.getMainLooper());
+            streamRunnable = new StreamRunnable(handler, cameraView, colorConfig, GRID_SIZE, CELL_SIZE);
         } else {
             binding.textNoRecords.setText("Hold for 1 second to remove the item.");
             binding.textNoRecords.setTextSize(13);

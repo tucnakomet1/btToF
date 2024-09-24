@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package cz.ima.btTof;
 
 import org.junit.Test;
 

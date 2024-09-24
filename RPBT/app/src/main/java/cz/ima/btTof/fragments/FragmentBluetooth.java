@@ -1,4 +1,4 @@
-package com.main.rpbt.fragments;
+package cz.ima.btTof.fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -28,10 +28,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.main.rpbt.R;
-import com.main.rpbt.databinding.FragmentBluetoothBinding;
-import com.main.rpbt.lan.LanClient;
-import com.main.rpbt.util.DeviceListAdapter;
+import cz.ima.btTof.R;
+import cz.ima.btTof.databinding.FragmentBluetoothBinding;
+import cz.ima.btTof.lan.LanClient;
+import cz.ima.btTof.util.DeviceListAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
