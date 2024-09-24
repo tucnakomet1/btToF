@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package com.main.rpbt.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,16 +12,28 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.tabs.TabLayout;
-import com.main.rpbt.databinding.FragmentFirstBinding;
+import com.main.rpbt.R;
+import com.main.rpbt.SettingsValues;
+import com.main.rpbt.databinding.FragmentSettingsBinding;
 import com.main.rpbt.util.SaveConfig;
 
 import java.util.Objects;
-import java.util.ServiceConfigurationError;
 
-public class FirstFragment extends Fragment {
+/**
+ * Fragment for the settings page
+ */
+public class FragmentSettings extends Fragment {
 
-    private FragmentFirstBinding binding;
+    private FragmentSettingsBinding binding;
 
+    /**
+     * Create the view of the settings fragment
+     *
+     * @param inflater - the layout inflater
+     * @param container - the view group container
+     * @param savedInstanceState - the saved instance state
+     * @return the view of the settings fragment
+     */
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -31,7 +43,7 @@ public class FirstFragment extends Fragment {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
         // bar
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentSettingsBinding.inflate(inflater, container, false);
         binding.rotateBar.setProgress(SettingsValues.getRotate());
 
         // switch
@@ -69,23 +81,27 @@ public class FirstFragment extends Fragment {
 
     }
 
+    /**
+     * Set the listeners for the buttons and the switches
+     *
+     * @param view - the view of the fragment
+     * @param savedInstanceState - the saved instance state
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // buttons
         binding.ButtonNext.setOnClickListener(v -> {
             editButtonsSet();
-            NavHostFragment.findNavController(FirstFragment.this)
-                    .navigate(R.id.action_FirstFragment_to_SecondFragment);
+            NavHostFragment.findNavController(FragmentSettings.this).navigate(R.id.action_SettingsFragment_to_PlayerOfflineFragment);
         });
         binding.ButtonPrev.setOnClickListener(v -> {
             editButtonsSet();
-            NavHostFragment.findNavController(FirstFragment.this)
-                    .navigate(R.id.action_FirstFragment_to_BluetoothFragment2);
+            NavHostFragment.findNavController(FragmentSettings.this).navigate(R.id.action_SettingsFragment_to_BluetoothFragment);
         });
         binding.ButtonSaveConfig.setOnClickListener(v -> {
             editButtonsSet();
-            new SaveConfig(
+            new SaveConfig(requireContext(),
                     binding.toggleButtonNbOfSensors, binding.toggleButtonSize, binding.editTextNumberDecimal, binding.toggleButtonOrder,
                     binding.ambientPerSpad, binding.nbSpadsEnabled, binding.nbTargetDetected, binding.signalPerSpad, binding.rangeSigma,
                     binding.distance, binding.targetStatus, binding.reflectancePercent, binding.motionIndicator, binding.accel, binding.xtalk,
@@ -158,12 +174,9 @@ public class FirstFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
+    /**
+     * Set the values of the buttons
+     */
     private void editButtonsSet() {
         SettingsValues.setSharpener(String.valueOf(binding.editTextNumberDecimal.getText()));
         SettingsValues.setColMin(String.valueOf(binding.editTextColormapMin.getText()));
@@ -176,4 +189,12 @@ public class FirstFragment extends Fragment {
             SettingsValues.setFont(fontSize);
     }
 
+    /**
+     * Destroy the view of the settings fragment
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

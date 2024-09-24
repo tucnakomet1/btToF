@@ -1,5 +1,8 @@
 package com.main.rpbt;
 
+/**
+ * Class for storing settings values
+ */
 public class SettingsValues {
     private static int FPS = 10, rotate = 0;
 

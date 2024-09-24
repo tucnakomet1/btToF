@@ -3,44 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/SettingsFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.main.rpbt.FirstFragment"
+        android:id="@+id/SettingsFragment"
+        android:name="com.main.rpbt.fragments.FragmentSettings"
         android:label=""
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/fragment_settings">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_SettingsFragment_to_PlayerOfflineFragment"
+            app:destination="@id/PlayerOfflineFragment" />
         <action
-            android:id="@+id/action_FirstFragment_to_BluetoothFragment2"
+            android:id="@+id/action_SettingsFragment_to_BluetoothFragment"
             app:destination="@id/BluetoothFragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.main.rpbt.SecondFragment"
+        android:id="@+id/PlayerOfflineFragment"
+        android:name="com.main.rpbt.fragments.FragmentOfflinePlayer"
         android:label=""
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/fragment_offline_player">
         <action
-            android:id="@+id/action_SecondFragment_to_BluetoothFragment"
+            android:id="@+id/action_PlayerOfflineFragment_to_CameraOnlineFragment"
+            app:destination="@id/CameraOnlineFragment" />
+        <action
+            android:id="@+id/action_PlayerOfflineFragment_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/CameraOnlineFragment"
+        android:name="com.main.rpbt.FragmentOnlineCamera"
+        android:label=""
+        tools:layout="@layout/fragment_camera">
+        <action
+            android:id="@+id/action_CameraOnlineFragment_to_BluetoothFragment"
             app:destination="@id/BluetoothFragment" />
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_CameraOnlineFragment_to_PlayerOfflineFragment"
+            app:destination="@id/PlayerOfflineFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/BluetoothFragment"
-        android:name="com.main.rpbt.BluetoothFragment"
+        android:name="com.main.rpbt.fragments.FragmentBluetooth"
         android:label=""
-        tools:layout="@layout/bluetooth">
+        tools:layout="@layout/fragment_bluetooth">
         <action
-            android:id="@+id/action_BluetoothFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_BluetoothFragment_to_SettingsFragment"
+            app:destination="@id/SettingsFragment" />
         <action
-            android:id="@+id/action_BluetoothFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_BluetoothFragment_to_CameraOnlineFragment"
+            app:destination="@id/CameraOnlineFragment" />
     </fragment>
 </navigation>

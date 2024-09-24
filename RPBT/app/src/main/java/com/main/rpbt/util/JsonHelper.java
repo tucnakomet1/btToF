@@ -10,14 +10,26 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Helper class to read and write JSON data to a file
+ */
 public class JsonHelper {
-
     private final Context context;
 
+    /**
+     * Constructor
+     *
+     * @param context Context
+     */
     public JsonHelper(Context context) {
         this.context = context;
     }
 
+    /**
+     * Get the JSON file
+     *
+     * @return JSON file
+     */
     private File getJsonFile() {
         File jsonDir = new File(context.getExternalFilesDir(null), "jsonFiles");
         if (!jsonDir.exists()) {
@@ -26,6 +38,12 @@ public class JsonHelper {
         return new File(jsonDir, "dateConfig.json");
     }
 
+    /**
+     * Add a new entry to the JSON file
+     *
+     * @param fileName File name
+     * @param date     Date
+     */
     public void addToJson(String fileName, String date) {
         File file = getJsonFile();
         JSONObject jsonObject = new JSONObject();
@@ -47,6 +65,11 @@ public class JsonHelper {
         }
     }
 
+    /**
+     * Remove an entry from the JSON file
+     *
+     * @param fileName File name
+     */
     public void removeFromJson(String fileName) {
         File file = getJsonFile();
         if (!file.exists()) return;
@@ -69,6 +92,11 @@ public class JsonHelper {
         }
     }
 
+    /** Get the value from the JSON file
+     *
+     * @param fileName File name
+     * @return Value
+     */
     public String getFromJson(String fileName) {
         File file = getJsonFile();
         if (!file.exists()) return "";

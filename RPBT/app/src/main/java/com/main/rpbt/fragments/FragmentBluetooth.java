@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package com.main.rpbt.fragments;
 
 import static android.content.ContentValues.TAG;
 
@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -27,7 +28,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.main.rpbt.databinding.BluetoothBinding;
+import com.main.rpbt.R;
+import com.main.rpbt.databinding.FragmentBluetoothBinding;
+import com.main.rpbt.lan.LanClient;
 import com.main.rpbt.util.DeviceListAdapter;
 
 import java.io.IOException;
@@ -35,16 +38,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
 @RequiresApi(api = Build.VERSION_CODES.S)
-public class BluetoothFragment extends Fragment {
+public class FragmentBluetooth extends Fragment {
 
     private ListView listView;
 
-    private BluetoothBinding binding;
+    private FragmentBluetoothBinding binding;
     private BluetoothAdapter bluetoothAdapter;
     private ArrayList<DeviceListAdapter.BluetoothDeviceWrapper> pairedDevicesList;
     private BluetoothSocket bluetoothSocket;
@@ -56,8 +58,7 @@ public class BluetoothFragment extends Fragment {
 
     String[] permissions = {Manifest.permission.BLUETOOTH_CONNECT};
 
-    public BluetoothFragment() {
-    }
+    public FragmentBluetooth() {}
 
 
     @Override
@@ -65,7 +66,7 @@ public class BluetoothFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        binding = BluetoothBinding.inflate(inflater, container, false);
+        binding = FragmentBluetoothBinding.inflate(inflater, container, false);
 
         listView = binding.listViewDevices;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -105,17 +106,15 @@ public class BluetoothFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(BluetoothFragment.this)
-                .navigate(R.id.action_BluetoothFragment_to_FirstFragment));
-        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(BluetoothFragment.this)
-                .navigate(R.id.action_BluetoothFragment_to_SecondFragment));
+        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this)
+                .navigate(R.id.action_BluetoothFragment_to_SettingsFragment));
+        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this)
+                .navigate(R.id.action_BluetoothFragment_to_CameraOnlineFragment));
         binding.SearchButton.setOnClickListener(v -> {
             fillConnectedDevice();
             scanDevices();
         });
-        binding.sendPingButton.setOnClickListener(v -> {
-            sendPing();
-        });
+        binding.ConnectButton.setOnClickListener(v -> connectLAN());
 
         listView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) -> {
             DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper = pairedDevicesList.get(position);
@@ -124,32 +123,24 @@ public class BluetoothFragment extends Fragment {
         });
     }
 
-
-    private void sendPing() {
-        try {
-            if (outStream == null) {
-                System.out.println("Outstream is null");
-                outStream = bluetoothSocket.getOutputStream();
-            }
-            outStream.write("ping".getBytes());
-            outStream.flush();
-        } catch (IOException e) {
-            Log.e("BluetoothConnection", "Error sending ping", e);
+    /**
+     * Connect to the server via LAN
+     */
+    private void connectLAN() {
+        String serverIP = "192.168.0.47";
+        //String serverIP = binding.ipAddress.getText().toString();
+        if (serverIP.isEmpty()) {
+            Toast.makeText(requireContext(), "Enter the IP address of the server!", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        String serverPort = binding.portNumber.getText().toString();
+        if (serverPort.isEmpty())
+            serverPort = String.valueOf(binding.portNumber.getHint());
+
+        LanClient client = LanClient.getInstance(requireContext(), serverIP, Integer.parseInt(serverPort));
     }
 
-    private void receivePing() {
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        try {
-            bytesRead = inStream.read(buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String received = new String(buffer, 0, bytesRead);
-        System.out.println("Received: " + received);
-    }
 
     private void sendMessage() {
     }

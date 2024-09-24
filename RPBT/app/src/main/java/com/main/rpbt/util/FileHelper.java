@@ -20,22 +20,28 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Helper class for file operations
+ */
 public class FileHelper {
+    /**
+     * Copies a file to the internal storage of the application
+     * @param uri - the URI of the file
+     * @param context - the context of the application
+     */
     public static void copyFileToInternalStorage(Uri uri, Context context) {
         InputStream inputStream = null;
         OutputStream outputStream = null;
 
         try {
             inputStream = context.getContentResolver().openInputStream(uri);
-            if (inputStream == null) {
+            if (inputStream == null)
                 throw new IOException("Unable to open input stream from URI");
-            }
 
             // Create or access the jsonFiles directory in the internal repository
             File jsonDir = new File(context.getFilesDir(), "jsonFiles");
             if (!jsonDir.exists()) {
                 if (!jsonDir.mkdir()) {
-                    System.out.println("\n\n\n does not \n\n" );
                     throw new IOException("Unable to create directory");
                 }
             }
@@ -50,7 +56,6 @@ public class FileHelper {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 outputStream = Files.newOutputStream(file.toPath());
             }
-
 
             byte[] buffer = new byte[1024];
             int bytesRead;
@@ -81,13 +86,21 @@ public class FileHelper {
         }
     }
 
+    /**
+     * Returns the current time in the format "EEEE HH:mm\ndd. MM. yyyy"
+     * @return the current time as a string
+     */
     private static String getTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("EEEE HH:mm\ndd. MM. yyyy", Locale.ENGLISH);
         Date date = new Date();
         return formatter.format(date);
     }
 
-    // list all files in assets directory
+    /**
+     * Lists all the files in the jsonFiles directory
+     * @param context - the context of the application
+     * @return a map of file names and their sizes
+     */
     public static Map<String, String> listAssetFiles(Context context) {
         Map<String, String> fileInfoMap = new HashMap<>();
 
@@ -99,7 +112,7 @@ public class FileHelper {
 
         if (files != null && files.length > 0) {
             for (File file : files) {
-                if (file.isFile() && file.getName().endsWith(".json")) {
+                if (file.isFile() && file.getName().endsWith(".json") && !file.getName().equals("config.json")) {
                     long fileSize = file.length();
 
                     @SuppressLint("DefaultLocale") String fileSizeFormatted = String.format("%.1f", (double) fileSize / 1024.0);
@@ -113,9 +126,13 @@ public class FileHelper {
         return fileInfoMap;
     }
 
-
+    /**
+     * Gets the file name from the URI
+     * @param context - the context of the application
+     * @param uri - the URI of the file
+     * @return the file name as a string
+     */
     private static String getFileName(Context context, Uri uri) {
-
         String[] projection = {MediaStore.MediaColumns.DISPLAY_NAME};
         try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
@@ -124,5 +141,24 @@ public class FileHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the file from the jsonFiles directory
+     * @param context - the context of the application
+     * @param fileName - the name of the file
+     * @return the file
+     * @throws IOException - if an I/O error occurs
+     */
+    public static File getJsonFileDir(Context context, String fileName) throws IOException {
+        // Create or access the jsonFiles directory in the internal repository
+        File jsonDir = new File(context.getFilesDir(), "jsonFiles");
+        if (!jsonDir.exists()) {
+            if (!jsonDir.mkdir()) {
+                throw new IOException("Unable to create directory");
+            }
+        }
+
+        return new File(jsonDir, fileName);
     }
 }

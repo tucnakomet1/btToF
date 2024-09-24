@@ -5,17 +5,31 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+/**
+ * Class that handles the color configuration of the heatmap.
+ */
 public class ColorConfig {
     private final int maxValue, minValue, TEXT_SIZE;
 
+    /**
+     * Constructor
+     *
+     * @param text_size size of the text
+     * @param maxValue  maximum value
+     * @param minValue  minimum value
+     */
     public ColorConfig(int text_size, int maxValue, int minValue) {
         this.TEXT_SIZE = text_size;
         this.minValue = minValue;
         this.maxValue = maxValue;
     }
 
-
-    // converts number into color
+    /**
+     * Returns the color of the pixel based on the value. -> converts number into color
+     *
+     * @param value value of the pixel
+     * @return color
+     */
     public int getColorFromValue(double value) {
         if (value >= maxValue || value <= minValue)
             return Color.HSVToColor(new float[]{0f, 0.0f, 1.0f});
@@ -26,8 +40,18 @@ public class ColorConfig {
         return Color.HSVToColor(new float[]{hue, 0.9f, 1.0f});
     }
 
-
-    // creates color bitmap
+    /**
+     * Creates a bitmap of the heatmap.
+     *
+     * @param gridSize          size of the grid
+     * @param cellSize          size of the cell
+     * @param data              data to be displayed
+     * @param currentLeftFrame  current left frame
+     * @param currentRightFrame current right frame
+     * @param leftTab           left tab
+     * @param rightTab          right tab
+     * @return bitmap
+     */
     public Bitmap createHeatmapBitmap(int gridSize, int cellSize, double[][] data, double[][] currentLeftFrame, double[][] currentRightFrame, String leftTab, String rightTab) {
         Bitmap bitmap = Bitmap.createBitmap(gridSize * cellSize, gridSize * cellSize, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -85,7 +109,15 @@ public class ColorConfig {
         return bitmap;
     }
 
-    public static Bitmap createEmptyScreen(int gridSize, int cellSize) {
+    /**
+     * Creates an empty screen with a message.
+     *
+     * @param gridSize    size of the grid
+     * @param cellSize    size of the cell
+     * @param offlineMode true if the stream is not running
+     * @return bitmap
+     */
+    public static Bitmap createEmptyScreen(int gridSize, int cellSize, boolean offlineMode) {
         Bitmap bitmap = Bitmap.createBitmap(gridSize * cellSize, gridSize * cellSize, Bitmap.Config.ARGB_8888);
 
         Paint paint = new Paint();
@@ -99,9 +131,12 @@ public class ColorConfig {
         textPaintLeft.setTextSize(65);
         textPaintLeft.setTextAlign(Paint.Align.CENTER);
 
-        canvas.drawText("No record has\nbeen selected yet.", (gridSize * cellSize) >> 1, (gridSize * cellSize) >> 2, textPaintLeft);
-        canvas.drawText("No record has\nbeen selected yet.", (gridSize * cellSize) >> 1, (gridSize * cellSize) >> 1, textPaintLeft);
-        canvas.drawText("No record has\nbeen selected yet.", (gridSize * cellSize) >> 1, (3*gridSize * cellSize) >> 2, textPaintLeft);
+        String text = "The stream is not running.";
+        if (offlineMode) text = "No record has been selected yet.";
+
+        canvas.drawText(text, (gridSize * cellSize) >> 1, (gridSize * cellSize) >> 2, textPaintLeft);
+        canvas.drawText(text, (gridSize * cellSize) >> 1, (gridSize * cellSize) >> 1, textPaintLeft);
+        canvas.drawText(text, (gridSize * cellSize) >> 1, (3*gridSize * cellSize) >> 2, textPaintLeft);
 
         return bitmap;
     }

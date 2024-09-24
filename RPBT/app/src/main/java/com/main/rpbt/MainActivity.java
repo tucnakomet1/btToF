@@ -13,11 +13,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.main.rpbt.databinding.ActivityMainBinding;
 
+/**
+ * Main activity for the app
+ */
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration appBarConfiguration;
-
-    // TODO: save config
-    // TODO: make bluetooth work
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

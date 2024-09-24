@@ -1,4 +1,4 @@
-package com.main.rpbt;
+package com.main.rpbt.util;
 
 import android.content.Context;
 
@@ -19,11 +19,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Class for parsing JSON files with data from the server
+ */
 public class JsonParser extends AppCompatActivity {
     private static final String[] itemList = {
             "ambient_per_spad", "nb_spads_enabled", "nb_target_detected", "signal_per_spad",
             "range_sigma", "distance", "target_status", "reflectance_percent", "motion_indicator"};
 
+    /**
+     * Load data from a JSON file and return a map with the data
+     * @param context - context of the activity
+     * @param grid - size of the grid
+     * @param fileName - name of the file to load
+     * @return map with the data
+     */
     public static Map<String, List<double[][]>> loadDataFromJson(Context context, int grid, String fileName) {
         Map<String, List<double[][]>> framesMap = new HashMap<>();
 
@@ -40,7 +50,6 @@ public class JsonParser extends AppCompatActivity {
                 inputStream = Files.newInputStream(file.toPath());
             }
 
-            //InputStream inputStream = context.getAssets().open(fileName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder jsonBuilder = new StringBuilder();
 

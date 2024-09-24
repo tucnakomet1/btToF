@@ -1,11 +1,19 @@
-package com.main.rpbt;
-
+package com.main.rpbt.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
@@ -20,16 +28,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import com.main.rpbt.databinding.FragmentSecondBinding;
+import com.main.rpbt.util.JsonParser;
+import com.main.rpbt.R;
+import com.main.rpbt.SettingsValues;
+import com.main.rpbt.databinding.FragmentOfflinePlayerBinding;
 import com.main.rpbt.util.ColorConfig;
 import com.main.rpbt.util.FileHelper;
 import com.main.rpbt.util.RecyclerViewAdapter;
@@ -44,19 +46,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SecondFragment extends Fragment {
-
+/**
+ * Fragment for offline player - used for playing offline records
+ */
+public class FragmentOfflinePlayer extends Fragment {
     private ActivityResultLauncher<String> filePicker;
-    private FragmentSecondBinding binding;
+    private FragmentOfflinePlayerBinding binding;
     private ScheduledExecutorService scheduler;
     private Handler handler;
-    private ImageView CameraView;
+    private ImageView cameraView;
     private TextView counterText;
+    StreamRunnable streamRunnable;
     private ColorConfig colorConfig;
     private List<double[][]> distanceFrames, leftFrames, rightFrames;
     private Map<String, List<double[][]>> frames;
 
-    private boolean isRunning = false, isRecording = false;
+    private boolean isRunning = false;
     private int minValue = 20, maxValue = 2000, currentFrameIndex = 0;
     private int GRID_SIZE = 8, CELL_SIZE = 40, TEXT_SIZE = 18; // 8x8 grid, size of each square in pixels
     private String leftTab = "none", rightTab = "none", fileName;
@@ -65,17 +70,19 @@ public class SecondFragment extends Fragment {
             "ambient_per_spad", "nb_spads_enabled", "nb_target_detected", "signal_per_spad",
             "range_sigma", "distance", "target_status", "reflectance_percent", "motion_indicator", "none"};
 
+    /**
+     * Create the view - set up the view
+     * @return view
+     */
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = FragmentOfflinePlayerBinding.inflate(inflater, container, false);
 
         binding.fpsBar.setProgress(SettingsValues.getFPS());
         binding.progressFPS.setText(String.valueOf(SettingsValues.getFPS()));
 
-        registerFilePicker();
+        registerFilePicker();       // for picking a file
 
         String min = SettingsValues.getColMin();
         if (!min.isEmpty()) minValue = Integer.parseInt(min);
@@ -83,10 +90,11 @@ public class SecondFragment extends Fragment {
         String max = SettingsValues.getColMax();
         if (!max.isEmpty()) maxValue = Integer.parseInt(max);
 
-        if (SettingsValues.isDetected(12)) GRID_SIZE = 4;   // 4x4
+        if (SettingsValues.isDetected(12)) GRID_SIZE = 4;   // if 4x4
 
+        // left and right tabs
         AutoCompleteTextView autoCompleteTextViewLeft = binding.autoCompleteTextLeft;
-        ArrayAdapter<String> adapterLeft = new ArrayAdapter<>(SecondFragment.this.getContext(), R.layout.list_item, itemList);
+        ArrayAdapter<String> adapterLeft = new ArrayAdapter<>(FragmentOfflinePlayer.this.getContext(), R.layout.list_item, itemList);
         autoCompleteTextViewLeft.setAdapter(adapterLeft);
         autoCompleteTextViewLeft.setOnItemClickListener((adapterView, view, i, l) -> {
             leftTab = adapterView.getItemAtPosition(i).toString();
@@ -95,7 +103,7 @@ public class SecondFragment extends Fragment {
         });
 
         AutoCompleteTextView autoCompleteTextViewRight = binding.autoCompleteTextRight;
-        ArrayAdapter<String> adapterRight = new ArrayAdapter<>(SecondFragment.this.getContext(), R.layout.list_item, itemList);
+        ArrayAdapter<String> adapterRight = new ArrayAdapter<>(FragmentOfflinePlayer.this.getContext(), R.layout.list_item, itemList);
         autoCompleteTextViewRight.setAdapter(adapterRight);
         autoCompleteTextViewRight.setOnItemClickListener((adapterView, view, i, l) -> {
             rightTab = adapterView.getItemAtPosition(i).toString();
@@ -103,21 +111,21 @@ public class SecondFragment extends Fragment {
             System.out.println(rightTab);
         });
 
-
         return binding.getRoot();
     }
 
-    private void stopRunning() {
-        scheduler.shutdown();
-        scheduler = null;
-        isRunning = false;
-    }
 
+    /**
+     * On view created - set up the view
+     * @param view - view
+     * @param savedInstanceState - saved instance state
+     */
     @SuppressLint("SetTextI18n")
+    @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // gets display info
+        // get display info
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         CELL_SIZE = screenWidth / GRID_SIZE;
@@ -125,15 +133,14 @@ public class SecondFragment extends Fragment {
         binding.autoCompleteTextLeft.setWidth(screenWidth);
         binding.autoCompleteTextRight.setWidth(screenWidth);
 
-        listFiles();
+        listFiles();        // list all files in the assets directory
 
-        // other
         counterText = binding.counterTxt;
         TEXT_SIZE += Integer.parseInt(SettingsValues.getFont());
 
         int rotation = 90 * SettingsValues.getRotate();
-        CameraView = binding.cameraView;
-        CameraView.setRotation(rotation);
+        cameraView = binding.cameraView;
+        cameraView.setRotation(rotation);
 
         // fps bar
         binding.fpsBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -150,15 +157,25 @@ public class SecondFragment extends Fragment {
         });
 
 
+        // buttons
+        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(FragmentOfflinePlayer.this)
+                .navigate(R.id.action_PlayerOfflineFragment_to_CameraOnlineFragment));
+        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(FragmentOfflinePlayer.this)
+                .navigate(R.id.action_PlayerOfflineFragment_to_SettingsFragment));
+        binding.ButtonLoad.setOnClickListener(v -> filePicker.launch("application/json"));
+
         Button playPause = binding.ButtonPlayPause;
         playPause.setOnClickListener(v -> {
             if (isRunning) {
+                isRunning = false;
+
                 stopRunning();
                 playPause.setText("Play");
             } else {
+                isRunning = true;
+
                 try {
                     handler.post(frameRunnable);
-                    isRunning = true;
                     playPause.setText("Pause");
                 } catch (Exception ex) {
                     Toast toast = Toast.makeText(this.requireContext(), "Create or upload an record.!", Toast.LENGTH_SHORT);
@@ -167,29 +184,20 @@ public class SecondFragment extends Fragment {
             }
         });
 
-        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(SecondFragment.this)
-                .navigate(R.id.action_SecondFragment_to_BluetoothFragment));
-        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(SecondFragment.this)
-                .navigate(R.id.action_SecondFragment_to_FirstFragment));
-
-        Button recordStop = binding.ButtonRecordStop;
-        recordStop.setOnClickListener(v -> {
-            if (isRecording) {
-                isRecording = false;
-                recordStop.setText("Record");
-            } else {
-                isRecording = true;
-                recordStop.setText("Stop");
-            }
-        });
-
-        binding.ButtonLoad.setOnClickListener(v -> filePicker.launch("application/json"));
-
+        // set up the default image
         colorConfig = new ColorConfig(TEXT_SIZE, maxValue, minValue);
-        Bitmap defaultImage = colorConfig.createEmptyScreen(GRID_SIZE, CELL_SIZE);
-        CameraView.setImageBitmap(defaultImage);
+        Bitmap defaultImage = ColorConfig.createEmptyScreen(GRID_SIZE, CELL_SIZE, true);
+        cameraView.setImageBitmap(defaultImage);
+
+        // set up the stream runnable
+        streamRunnable.setCameraView(cameraView);
+        streamRunnable.setColorConfig(colorConfig);
     }
 
+
+    /**
+     * Register file picker - used for picking a file
+     */
     private void registerFilePicker() {
         filePicker = registerForActivityResult(
                 new ActivityResultContracts.GetContent(),
@@ -197,20 +205,27 @@ public class SecondFragment extends Fragment {
         );
     }
 
-    //this gets executed when the user picks a file
+    /**
+     * On pick file - this gets executed when the user picks a file
+     * @param uri - URI of the file
+     */
     private void onPickFile(Uri uri) {
-        try (InputStream ignored = requireContext().getContentResolver().openInputStream(uri)) {
-            if (uri != null) {
+        if (uri != null) {
+            try (InputStream ignored = requireContext().getContentResolver().openInputStream(uri)) {
                 FileHelper.copyFileToInternalStorage(uri, requireContext());
                 listFiles();    // reload
+            } catch (IOException exception) {
+                System.out.println("Failed to open file: " + exception.getMessage());
             }
-        } catch (IOException exception) {
-            exception.printStackTrace();
+        } else {
+            System.out.println("No file was selected.");
         }
     }
 
 
-    // used for reloading items in recyclerview
+    /**
+     * List files - list all files in the assets directory. Also used for reloading items in recyclerview
+     */
     @SuppressLint("SetTextI18n")
     private void listFiles() {
         // list assets directory - all JSON files (history)
@@ -223,6 +238,7 @@ public class SecondFragment extends Fragment {
             arr_names_sizes.add(pair);
         }
 
+        // fill recyclerview with items
         if (arr_names_sizes.size() == 0) {
             binding.textNoRecords.setText("No records!");
             binding.textNoRecords.setTextSize(20);
@@ -231,7 +247,6 @@ public class SecondFragment extends Fragment {
             binding.textNoRecords.setText("Hold for 1 second to remove the item.");
             binding.textNoRecords.setTextSize(13);
             binding.videoHistoryRecyclerView.setVisibility(View.VISIBLE);
-            //binding.textNoRecords.setHeight(0);
 
             fileName = arr_names_sizes.get(0)[0];
 
@@ -243,18 +258,14 @@ public class SecondFragment extends Fragment {
                 currentFrameIndex = 0;
             };
 
-            RecyclerViewAdapter listAdapter = new RecyclerViewAdapter(
-                    SecondFragment.this.requireContext(),
-                    arr_names_sizes,
-                    onItemClickListener,
-                    null
-            );
+            RecyclerViewAdapter listAdapter = new RecyclerViewAdapter(FragmentOfflinePlayer.this.requireContext(), arr_names_sizes, onItemClickListener, null);
 
             // longer click (1 second) - remove an item, file
             RecyclerViewAdapter finalListAdapter = listAdapter;
             RecyclerViewAdapter.OnItemLongClickListener onItemLongClickListener = position -> {
                 String fileName = arr_names_sizes.get(position)[0];
 
+                // alert dialog - are you sure you want to delete the file?
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Delete File")
                         .setMessage("Are you sure you want to delete this file?")
@@ -275,60 +286,36 @@ public class SecondFragment extends Fragment {
                             } else {
                                 Toast.makeText(requireContext(), "Failed to delete file", Toast.LENGTH_SHORT).show();
                             }
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
+                        }).setNegativeButton(android.R.string.no, null).show();
             };
 
-            listAdapter = new RecyclerViewAdapter(
-                    SecondFragment.this.requireContext(),
-                    arr_names_sizes,
-                    onItemClickListener,
-                    onItemLongClickListener
-            );
+            listAdapter = new RecyclerViewAdapter(FragmentOfflinePlayer.this.requireContext(), arr_names_sizes, onItemClickListener, onItemLongClickListener);
 
             binding.videoHistoryRecyclerView.setAdapter(listAdapter);
             binding.videoHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
             binding.videoHistoryRecyclerView.setClickable(true);
 
-
-
             handler = new Handler(Looper.getMainLooper());
+            streamRunnable = new StreamRunnable(handler, cameraView, colorConfig, GRID_SIZE, CELL_SIZE);
             frames = JsonParser.loadDataFromJson(requireContext(), GRID_SIZE, fileName);
             distanceFrames = frames.get("distance");
         }
-
     }
 
+    /**
+     * Update the fragment
+     */
     private void updateFragment() {
-        Fragment currentFragment = SecondFragment.this;
+        Fragment currentFragment = FragmentOfflinePlayer.this;
         @SuppressLint("DetachAndAttachSameFragment") FragmentTransaction fragTransaction = getParentFragmentManager().beginTransaction();
         fragTransaction.detach(currentFragment);
         fragTransaction.attach(currentFragment);
         fragTransaction.commit();
     }
 
-
-    // sets bitmap from JSON and iterate
-    private void SetColors() {
-        double[][] currentDistanceFrame = distanceFrames.get(currentFrameIndex);
-
-        double[][] currentLeftFrame = null;
-        if (!leftTab.equals("none"))
-            currentLeftFrame = leftFrames.get(currentFrameIndex);
-
-        double[][] currentRightFrame = null;
-        if (!rightTab.equals("none"))
-            currentRightFrame = rightFrames.get(currentFrameIndex);
-
-        Bitmap heatmapBitmap = colorConfig.createHeatmapBitmap(GRID_SIZE, CELL_SIZE, currentDistanceFrame, currentLeftFrame, currentRightFrame, leftTab, rightTab);
-        CameraView.setImageBitmap(heatmapBitmap);
-
-        currentFrameIndex = (currentFrameIndex + 1) % distanceFrames.size();
-        counterText.setText(String.valueOf(currentFrameIndex));
-    }
-
-    // runnable for running frames depending on FPS
+    /**
+     * Runnable for running frames depending on FPS
+     */
     private final Runnable frameRunnable = new Runnable() {
         @Override
         public void run() {
@@ -340,7 +327,75 @@ public class SecondFragment extends Fragment {
         }
     };
 
+    /**
+     * Set colors on the screen - from JSON or from the server
+     */
+    private void SetColors() {
+        double[][] currentDistanceFrame = distanceFrames.get(currentFrameIndex);
+        double[][] currentLeftFrame = !leftTab.equals("none") ? leftFrames.get(currentFrameIndex) : null;
+        double[][] currentRightFrame = !rightTab.equals("none") ? rightFrames.get(currentFrameIndex) : null;
 
+        Bitmap heatmapBitmap = colorConfig.createHeatmapBitmap(GRID_SIZE, CELL_SIZE, currentDistanceFrame, currentLeftFrame, currentRightFrame, leftTab, rightTab);
+        cameraView.setImageBitmap(heatmapBitmap);
+        cameraView.invalidate();
+
+        currentFrameIndex = (currentFrameIndex + 1) % distanceFrames.size();
+        counterText.setText(String.valueOf(currentFrameIndex));
+    }
+
+
+    /**
+     * Runnable for streaming frames from the server
+     */
+    public static class StreamRunnable implements Runnable {
+        private double[][] frameData;
+        private final Handler handler;
+        private ImageView cameraView;
+        private ColorConfig colorConfig;
+        private final int GRID_SIZE, CELL_SIZE;
+
+        // Constructor for passing necessary dependencies
+        public StreamRunnable(Handler handler, ImageView cameraView, ColorConfig colorConfig, int GRID_SIZE, int CELL_SIZE) {
+            this.handler = handler;
+            this.cameraView = cameraView;
+            this.colorConfig = colorConfig;
+            this.GRID_SIZE = GRID_SIZE;
+            this.CELL_SIZE = CELL_SIZE;
+        }
+
+        @Override
+        public void run() {
+            if (frameData != null) {
+                // Post UI update to the main thread using the handler
+                handler.post(() -> {
+                    assert colorConfig != null;
+                    Bitmap heatmapBitmap = colorConfig.createHeatmapBitmap(GRID_SIZE, CELL_SIZE, frameData, null, null, "none", "none");
+                    cameraView.setImageBitmap(heatmapBitmap);
+                });
+            }
+        }
+
+        public void setCameraView(ImageView cameraView) {
+            this.cameraView = cameraView;
+        }
+
+        public void setColorConfig(ColorConfig colorConfig) {
+            this.colorConfig = colorConfig;
+        }
+    }
+
+    /**
+      * Stop running
+      */
+    private void stopRunning() {
+        scheduler.shutdown();
+        scheduler = null;
+        isRunning = false;
+    }
+
+    /**
+     * Destroy the view
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

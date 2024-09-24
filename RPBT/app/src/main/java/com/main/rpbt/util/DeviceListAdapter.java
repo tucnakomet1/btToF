@@ -11,11 +11,17 @@ import com.main.rpbt.R;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter for the list of Bluetooth devices
+ */
 public class DeviceListAdapter extends BaseAdapter {
 
     private final Context context;
     private final ArrayList<BluetoothDeviceWrapper> devices;
 
+    /**
+     * Constructor
+     */
     public DeviceListAdapter(Context context, ArrayList<BluetoothDeviceWrapper> devices) {
         this.context = context;
         this.devices = devices;
@@ -36,7 +42,9 @@ public class DeviceListAdapter extends BaseAdapter {
         return position;
     }
 
-
+    /**
+     * Returns the view for each device in the list
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -55,6 +63,9 @@ public class DeviceListAdapter extends BaseAdapter {
         return convertView;
     }
 
+    /**
+     * Wrapper class for BluetoothDevice
+     */
     public static class BluetoothDeviceWrapper {
         private final String name;
         private final String address;
