@@ -5,6 +5,6 @@
 
 ### Galerie
 
-|           Config           |                   Camera & Video player                    |              Bluetooth settings              |
-| -------------------------- | -------------------------------------------------------------- | ---------------------------------------------- |
-| ![config](config.jpg) | ![camera and video player](camera_player.jpg) | ![Bluetooth settings](bluetooth.jpg) |
+|              Config               |               Live camera                |              Video player               |                 Bluetooth settings                  |
+| ------------------------------- | ----------------------------------------- | --------------------------------------- | --------------------------------------------------- |
+| ![config](img/config.jpg) | ![live camera](img/camera.jpg) | ![video player](img/player.jpg) | ![Bluetooth settings](img/bluetooth.jpg) |
