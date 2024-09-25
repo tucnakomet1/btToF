@@ -20,7 +20,7 @@ public class GetCOM {
      * @return true if there are any available COM ports, false otherwise
      */
     public boolean CheckForPorts() {
-        if (allPorts == null) {
+        if (allPorts.length == 0) {
             logger.warning("No ports found. \nPlease refresh the list of ports.");
             return false;
         } return true;

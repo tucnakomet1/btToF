@@ -1,5 +1,6 @@
 package cz.ima.btTof;
 
+import cz.ima.btTof.bluetooth.BtServer;
 import cz.ima.btTof.utils.GetCOM;
 import cz.ima.btTof.utils.WriteJson;
 import cz.ima.btTof.lan.LanServer;
@@ -15,7 +16,8 @@ public class Main {
         GetCOM gc = new GetCOM();
         String[][] ports = gc.getPorts();
 
-        if (!gc.CheckForPorts()) {
+
+        /*if (!gc.CheckForPorts()) {
             System.out.println("No COM ports found.");
             return;
         }
@@ -30,17 +32,17 @@ public class Main {
             }
         }
         WriteJson.updateConfig("config.json", "com_port", port);
-        System.out.println("Using port: " + port);
+        System.out.println("Using port: " + port);*/
 
         // start the ToF sensor stream
-        TofFunc func = new TofFunc(port);
+        //TofFunc func = new TofFunc(port);
         //func.start_stream(null);
         //func.record_stream();
 
-        new LanServer(func);
+        //new LanServer(func);
 
         // bluetooth connection
-        //new BluetoothServer();
+        new BtServer();
     }
 
 }

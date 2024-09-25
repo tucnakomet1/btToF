@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +26,12 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import cz.ima.btTof.R;
+import cz.ima.btTof.bluetooth.BluetoothClient;
+import cz.ima.btTof.bluetooth.BluetoothUtils;
 import cz.ima.btTof.databinding.FragmentBluetoothBinding;
 import cz.ima.btTof.lan.LanClient;
 import cz.ima.btTof.util.DeviceListAdapter;
@@ -41,10 +44,13 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Fragment for the Bluetooth connection
+ */
 @RequiresApi(api = Build.VERSION_CODES.S)
 public class FragmentBluetooth extends Fragment {
 
-    private ListView listView;
+    private RecyclerView recyclerView;
 
     private FragmentBluetoothBinding binding;
     private BluetoothAdapter bluetoothAdapter;
@@ -53,14 +59,21 @@ public class FragmentBluetooth extends Fragment {
     private InputStream inStream;
     private OutputStream outStream;
 
-    //private static final String SERVER_UUID = "1101"; // Same UUID as the server
-    private UUID serverUUID;
+    private String btDeviceName, btDeviceAddress;
 
     String[] permissions = {Manifest.permission.BLUETOOTH_CONNECT};
 
     public FragmentBluetooth() {}
 
 
+    /**
+     * Create the view of the Bluetooth fragment
+     *
+     * @param inflater - the layout inflater
+     * @param container - the view group container
+     * @param savedInstanceState - the saved instance state
+     * @return the view of the Bluetooth fragment
+     */
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
@@ -68,14 +81,12 @@ public class FragmentBluetooth extends Fragment {
     ) {
         binding = FragmentBluetoothBinding.inflate(inflater, container, false);
 
-        listView = binding.listViewDevices;
+        recyclerView = binding.recyclerViewDevices;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (bluetoothAdapter == null) {
             Log.d(TAG, "This device does not support Bluetooth! :(");
         } else {
-            Log.d(TAG, "Device support Bluetooth");
-
             // Check if Bluetooth is enabled
             if (!bluetoothAdapter.isEnabled()) {
                 Log.d(TAG, "Bluetooth is disabled");
@@ -99,36 +110,42 @@ public class FragmentBluetooth extends Fragment {
                 });
 
         return binding.getRoot();
-
     }
 
 
+    /**
+     * Set up the listeners for the buttons
+     *
+     * @param view - the view of the fragment
+     * @param savedInstanceState - the saved instance state
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this)
-                .navigate(R.id.action_BluetoothFragment_to_SettingsFragment));
-        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this)
-                .navigate(R.id.action_BluetoothFragment_to_CameraOnlineFragment));
+        // buttons
+        binding.ButtonNext.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this).navigate(R.id.action_BluetoothFragment_to_SettingsFragment));
+        binding.ButtonPrev.setOnClickListener(v -> NavHostFragment.findNavController(FragmentBluetooth.this).navigate(R.id.action_BluetoothFragment_to_CameraOnlineFragment));
         binding.SearchButton.setOnClickListener(v -> {
-            fillConnectedDevice();
+            fillPairedDevice();
             scanDevices();
         });
-        binding.ConnectButton.setOnClickListener(v -> connectLAN());
+        binding.ConnectBtButton.setOnClickListener(v -> {
+            DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper = pairedDevicesList.get(BluetoothUtils.findWrapperByName(pairedDevicesList, btDeviceName));
 
-        listView.setOnItemClickListener((AdapterView<?> parent, View v, int position, long id) -> {
-            DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper = pairedDevicesList.get(position);
-            System.out.println(deviceWrapper);
-            connectToDevice(deviceWrapper);
+            BluetoothClient.getInstance(requireContext(), deviceWrapper, bluetoothAdapter);
+
+            fillConnectedDevice();
         });
+        binding.ConnectButton.setOnClickListener(v -> connectLAN());
     }
+
 
     /**
      * Connect to the server via LAN
+     * Read the IP address and port number from the text fields
      */
     private void connectLAN() {
-        String serverIP = "192.168.0.47";
-        //String serverIP = binding.ipAddress.getText().toString();
+        String serverIP = binding.ipAddress.getText().toString();
         if (serverIP.isEmpty()) {
             Toast.makeText(requireContext(), "Enter the IP address of the server!", Toast.LENGTH_SHORT).show();
             return;
@@ -138,92 +155,15 @@ public class FragmentBluetooth extends Fragment {
         if (serverPort.isEmpty())
             serverPort = String.valueOf(binding.portNumber.getHint());
 
-        LanClient client = LanClient.getInstance(requireContext(), serverIP, Integer.parseInt(serverPort));
+        LanClient.getInstance(requireContext(), serverIP, Integer.parseInt(serverPort));
     }
 
-
-    private void sendMessage() {
-    }
-
-    private void receiveMessage() {
-    }
-
-    private void closeConnection() {
-        try {
-            inStream.close();
-            outStream.close();
-            bluetoothSocket.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void connectToDevice(DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper) {
-        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceWrapper.getAddress());
-
-        try {
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-
-            // UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-            // bluetoothSocket = device.createRfcommSocketToServiceRecord(uuid);
-
-            bluetoothSocket = (BluetoothSocket) device.getClass().getMethod("createInsecureRfcommSocket", int.class).invoke(device, 1);
-            assert bluetoothSocket != null;
-            bluetoothSocket.connect();
-
-            System.out.println("\n\nConnected to " + deviceWrapper.getName());
-        } catch (IOException e) {
-            Log.e("BluetoothConnection", "Error connecting to device: " + deviceWrapper.getName(), e);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-            Log.e("BluetoothConnection", "Error creating socket", e);
-        }
-    }
-
-    private void scanDevices() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        pairedDevicesList = new ArrayList<>();
-
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                pairedDevicesList.add(new DeviceListAdapter.BluetoothDeviceWrapper(device.getName(), device.getAddress()));
-
-                String deviceInfo = device.getName() + "   " + device.getAddress() + "   Type: " + device.getType();
-                System.out.println(deviceInfo);
-            }
-        } else {
-            System.out.println("No paired devices found.");
-        }
-
-
-        DeviceListAdapter adapter = new DeviceListAdapter(requireContext(), pairedDevicesList);
-        listView.setAdapter(adapter);
-
-    }
-
-    // Show currently connected device
-    private void fillConnectedDevice() {
+    /**
+     * Fill the paired device text fields - Show paired devices
+     */
+    private void fillPairedDevice() {
         TextView name = binding.devsText;
-        TextView mac = binding.devsText2;
+        TextView address = binding.devsText2;
 
         bluetoothAdapter.getProfileProxy(requireContext(), new BluetoothProfile.ServiceListener() {
             @Override
@@ -242,13 +182,19 @@ public class FragmentBluetooth extends Fragment {
                             // for ActivityCompat#requestPermissions for more details.
                             return;
                         }
-                        name.setText(connectedDevice.getName());
-                        mac.setText(connectedDevice.getAddress());
+                        btDeviceName = connectedDevice.getName();
+                        btDeviceAddress = connectedDevice.getAddress();
 
-                        setBluetoothSocket(connectedDevice.getAddress());
+                        name.setText(btDeviceName);
+                        address.setText(btDeviceAddress);
+
+                        setBluetoothSocket(btDeviceAddress);
                     } else {
-                        name.setText("");
-                        mac.setText("");
+                        btDeviceName = "None";
+                        btDeviceAddress = "";
+
+                        name.setText(btDeviceName);
+                        address.setText(btDeviceAddress);
                     }
                 }
                 bluetoothAdapter.closeProfileProxy(profile, proxy);
@@ -256,14 +202,60 @@ public class FragmentBluetooth extends Fragment {
 
             @Override
             public void onServiceDisconnected(int profile) {
-                name.setText("");
-                mac.setText("");
+                btDeviceName = "None";
+                btDeviceAddress = "";
+
+                name.setText(btDeviceName);
+                address.setText(btDeviceAddress);
             }
         }, BluetoothProfile.HEADSET);
     }
 
+    /**
+     * Scan for devices and show them in the list view
+     */
+    private void scanDevices() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        pairedDevicesList = new ArrayList<>();
+
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices)
+                pairedDevicesList.add(new DeviceListAdapter.BluetoothDeviceWrapper(device.getName(), device.getAddress()));
+        } else
+            System.out.println("No paired devices found.");
+
+        DeviceListAdapter adapter = new DeviceListAdapter(requireContext(), pairedDevicesList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
+    }
+
+
+    /**
+     * Fill the connected device text fields - Show currently connected devices
+     */
+    private void fillConnectedDevice() {
+        binding.connText.setText(btDeviceName);
+        binding.connText2.setText(btDeviceAddress);
+    }
+
+
+    /**
+     * Set the Bluetooth socket
+     *
+     * @param address - the address of the device
+     */
     private void setBluetoothSocket(String address) {
-        System.out.println("\n\n\n\t\t\tHere!\n\n\n");
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -288,7 +280,9 @@ public class FragmentBluetooth extends Fragment {
         }
     }
 
-
+    /**
+     * Destroy the view of the fragment
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

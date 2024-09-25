@@ -4,8 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import cz.ima.btTof.R;
 
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 /**
  * Adapter for the list of Bluetooth devices
  */
-public class DeviceListAdapter extends BaseAdapter {
+public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.DeviceViewHolder> {
 
     private final Context context;
     private final ArrayList<BluetoothDeviceWrapper> devices;
@@ -27,40 +29,47 @@ public class DeviceListAdapter extends BaseAdapter {
         this.devices = devices;
     }
 
+    /**
+     * Create a new view holder
+     */
+    @NonNull
     @Override
-    public int getCount() {
-        return devices.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return devices.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+    public DeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.list_item_bt_device, parent, false);
+        return new DeviceViewHolder(view);
     }
 
     /**
-     * Returns the view for each device in the list
+     * Bind the view holder
      */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.list_item_bt_device, parent, false);
-        }
-
-        TextView deviceName = convertView.findViewById(R.id.device_name_text);
-        TextView deviceAddress = convertView.findViewById(R.id.device_mac_address_text);
-
+    public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
         BluetoothDeviceWrapper device = devices.get(position);
+        holder.deviceName.setText(device.getName());
+        holder.deviceAddress.setText(device.getAddress());
+    }
 
-        deviceName.setText(device.getName());
-        deviceAddress.setText(device.getAddress());
+    /**
+     * View holder for the device
+     */
+    static class DeviceViewHolder extends RecyclerView.ViewHolder {
+        TextView deviceName;
+        TextView deviceAddress;
 
-        return convertView;
+        // itemView is the view of the list item
+        public DeviceViewHolder(@NonNull View itemView) {
+            super(itemView);
+            deviceName = itemView.findViewById(R.id.device_name_text);
+            deviceAddress = itemView.findViewById(R.id.device_mac_address_text);
+        }
+    }
+
+    /**
+     * Get the number of devices
+     */
+    @Override
+    public int getItemCount() {
+        return devices.size();
     }
 
     /**

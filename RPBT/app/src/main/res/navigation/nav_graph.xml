@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/CameraOnlineFragment"
-        android:name="cz.ima.btTof.FragmentOnlineCamera"
+        android:name="cz.ima.btTof.fragments.FragmentOnlineCamera"
         android:label=""
         tools:layout="@layout/fragment_camera">
         <action

@@ -122,4 +122,6 @@
     <string name="camera_view">Camera view</string>
     <string name="stream">Stream</string>
     <string name="rotation_">Rotation:</string>
+    <string name="paired_device">Paired device:</string>
+    <string name="connect">Connect</string>
 </resources>
