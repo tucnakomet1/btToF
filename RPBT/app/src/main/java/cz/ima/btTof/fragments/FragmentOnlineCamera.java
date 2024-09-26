@@ -1,8 +1,6 @@
 package cz.ima.btTof.fragments;
 
-
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothSocket;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +10,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,42 +18,32 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import cz.ima.btTof.R;
-import cz.ima.btTof.SettingsValues;
-import cz.ima.btTof.bluetooth.BluetoothClient;
-import cz.ima.btTof.databinding.FragmentCameraBinding;
-import cz.ima.btTof.lan.LanClient;
-import cz.ima.btTof.util.ColorConfig;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class FragmentOnlineCamera extends Fragment {
+import cz.ima.btTof.R;
+import cz.ima.btTof.SettingsValues;
+import cz.ima.btTof.bluetooth.BluetoothClient;
+import cz.ima.btTof.databinding.FragmentCameraBinding;
+import cz.ima.btTof.lan.LanClient;
+import cz.ima.btTof.util.ColorConfig;
+import cz.ima.btTof.util.JsonParser;
+import cz.ima.btTof.util.SendReceive;
 
-    private Socket socket;
-    private BluetoothSocket btSocket;
-    private InputStream btInStream;
-    private OutputStream btOutStream;
+public class FragmentOnlineCamera extends Fragment {
+    private PrintWriter btWriter;
+    private BufferedReader btReader;
 
 
     private PrintWriter writer;
     private BufferedReader reader;
     private ExecutorService executorService;
-    private LanClient client;
-    private BluetoothClient btClient;
 
     // rest
 
@@ -69,11 +55,6 @@ public class FragmentOnlineCamera extends Fragment {
     private boolean isRunning = false, isRecording = false, isConnected = false, isStreaming = false, isBluetooth = false;
     private int minValue = 20, maxValue = 2000;
     private int GRID_SIZE = 8, TEXT_SIZE = 18;  // 8x8 grid, size of each square in pixels
-    private String leftTab = "none", rightTab = "none";
-
-    private final String[] itemList = {
-            "ambient_per_spad", "nb_spads_enabled", "nb_target_detected", "signal_per_spad",
-            "range_sigma", "distance", "target_status", "reflectance_percent", "motion_indicator", "none"};
 
     /**
      * Create the view - set up the view
@@ -88,12 +69,16 @@ public class FragmentOnlineCamera extends Fragment {
 
         // connection to the server
         executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(this::connectToBluetoothServer);
-        connectToBluetoothServer();
+        try {
+            executorService.execute(this::connectToBluetoothServer);
+            connectToBluetoothServer();
 
-        if (!isBluetooth) {
-            executorService.execute(this::connectToLanServer);
-            connectToLanServer();
+            if (!isBluetooth) {
+                executorService.execute(this::connectToLanServer);
+                connectToLanServer();
+            }
+        } catch (Exception ignored) {
+
         }
 
         String min = SettingsValues.getColMin();
@@ -102,26 +87,7 @@ public class FragmentOnlineCamera extends Fragment {
         String max = SettingsValues.getColMax();
         if (!max.isEmpty()) maxValue = Integer.parseInt(max);
 
-        if (SettingsValues.isDetected(12)) GRID_SIZE = 4;   // 4x4
-
-        // left and right tabs
-        AutoCompleteTextView autoCompleteTextViewLeft = binding.autoCompleteTextLeft;
-        ArrayAdapter<String> adapterLeft = new ArrayAdapter<>(FragmentOnlineCamera.this.getContext(), R.layout.list_item, itemList);
-        autoCompleteTextViewLeft.setAdapter(adapterLeft);
-        autoCompleteTextViewLeft.setOnItemClickListener((adapterView, view, i, l) -> {
-            leftTab = adapterView.getItemAtPosition(i).toString();
-            leftFrames = frames.get(leftTab);
-            System.out.println(leftTab);
-        });
-
-        AutoCompleteTextView autoCompleteTextViewRight = binding.autoCompleteTextRight;
-        ArrayAdapter<String> adapterRight = new ArrayAdapter<>(FragmentOnlineCamera.this.getContext(), R.layout.list_item, itemList);
-        autoCompleteTextViewRight.setAdapter(adapterRight);
-        autoCompleteTextViewRight.setOnItemClickListener((adapterView, view, i, l) -> {
-            rightTab = adapterView.getItemAtPosition(i).toString();
-            rightFrames = frames.get(rightTab);
-            System.out.println(rightTab);
-        });
+        if (SettingsValues.isDetected(12)) GRID_SIZE = 4;   // 4x4 grid
 
         return binding.getRoot();
     }
@@ -140,8 +106,6 @@ public class FragmentOnlineCamera extends Fragment {
         int screenWidth = displayMetrics.widthPixels;
         int CELL_SIZE = screenWidth / GRID_SIZE;
 
-        binding.autoCompleteTextLeft.setWidth(screenWidth);
-        binding.autoCompleteTextRight.setWidth(screenWidth);
 
         // other
         TEXT_SIZE += Integer.parseInt(SettingsValues.getFont());
@@ -212,11 +176,11 @@ public class FragmentOnlineCamera extends Fragment {
         streamRunnable.setColorConfig(colorConfig);
 
         // send config to the server
-        if (writer != null) {
+        PrintWriter commonWriter = isBluetooth ? btWriter : writer;
+        if (commonWriter != null) {
             sendMessage("config");
             try {
-                if (isBluetooth) btClient.sendConfig(requireContext());
-                else client.sendConfig(requireContext());
+                SendReceive.sendConfig(requireContext(), commonWriter);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -271,10 +235,9 @@ public class FragmentOnlineCamera extends Fragment {
      */
     @SuppressLint("SetTextI18n")
     private void connectToLanServer() {
-        client = LanClient.getInstance(requireContext(), null, 0);
+        LanClient client = LanClient.getInstance(requireContext(), null, 0);
 
         if (client.getSocket() != null) {
-            socket = client.getSocket();
             writer = client.getWriter();
             reader = client.getReader();
 
@@ -291,19 +254,15 @@ public class FragmentOnlineCamera extends Fragment {
      */
     @SuppressLint("SetTextI18n")
     private void connectToBluetoothServer() {
-        btClient = BluetoothClient.getInstance(requireContext(), null, null);
+        BluetoothClient btClient = BluetoothClient.getInstance(requireContext(), null, null);
 
         if (btClient.getBluetoothSocket() != null) {
-            btSocket = btClient.getBluetoothSocket();
-            btOutStream = btClient.getOutStream();
-            btInStream = btClient.getInStream();
+            btWriter = btClient.getWriter();
+            btReader = btClient.getReader();
 
-            binding.pairedView.setImageResource(R.drawable.circle_green);
             isConnected = true;
             isBluetooth = true;
-            binding.ButtonPlayPause.setText("Stream");
-        } else {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(requireContext(), "No connection to the server", Toast.LENGTH_SHORT).show());
+            binding.pairedView.setImageResource(R.drawable.circle_green);
         }
     }
 
@@ -313,13 +272,9 @@ public class FragmentOnlineCamera extends Fragment {
     private void startStreaming() {
         isStreaming = !isStreaming;
         executorService.execute(() -> sendMessage("stream"));
-        if (isBluetooth) {
-            System.out.println("Listening!");
-            listenForServerResponseBluetooth();
-        } else {
-            listenForServerResponse();
-        }
 
+        BufferedReader listenReader = isBluetooth ? btReader : this.reader;
+        listenForServerResponse(listenReader);
     }
 
     /**
@@ -327,35 +282,25 @@ public class FragmentOnlineCamera extends Fragment {
      * @param message - message to send
      */
     private void sendMessage(String message) {
-        if (isBluetooth) {
-            try {
-                btOutStream.write(message.getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            ;
-        } else {
-            writer.println(message);
-        }
+        PrintWriter commonWriter = isBluetooth ? btWriter : writer;
+        commonWriter.println(message);
     }
 
     /**
      * Listen for server response - get the frames from the server and set the colors
      */
-    private void listenForServerResponse() {
+    private void listenForServerResponse(BufferedReader listenReader) {
         try {
             String message;
-            while ((message = reader.readLine()) != null) {
+            while ((message = listenReader.readLine()) != null) {
                 if (message.contains("content")) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        client.handleContent(reader);
+                        SendReceive.handleContent(requireContext(), listenReader);
                     }
                     sendMessage("stream");
 
                 } else if (message.startsWith("[")) {
-                    System.out.println("Received message: " + message);
-
-                    double[][] frameData = makeDistantFramesFromString(message);
+                    double[][] frameData = JsonParser.makeDistantFramesFromString(message);
 
                     // Start streaming task with received data
                     streamRunnable.setFrameData(frameData);
@@ -369,67 +314,6 @@ public class FragmentOnlineCamera extends Fragment {
     }
 
     /**
-     * Start the message receiver - run in a separate thread
-     */
-    private void listenForServerResponseBluetooth() {
-        byte[] buffer = new byte[1024];
-        int bytes;
-
-        while (true) {
-            try {
-                bytes = btInStream.read(buffer);
-                if (bytes > 0) {
-                    String message = new String(buffer, 0, bytes);
-                    System.out.println("Received message: " + message);
-                    if (message.contains("content")) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            btClient.handleContent(btInStream);
-                        }
-                        sendMessage("stream");
-                    } else if (message.startsWith("[")) {
-                        double[][] frameData = makeDistantFramesFromString(message);
-
-                        // Start streaming task with received data
-                        streamRunnable.setFrameData(frameData);
-                        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                        scheduler.execute(streamRunnable);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-    }
-
-    /**
-     * Make distant frames from string
-     * @param message - String in format "[[double], [double], ...]"
-     * @return frame - double[][] array
-     */
-    private double[][] makeDistantFramesFromString(String message) {
-        JSONArray jsonArray;
-        double[][] frame;
-        try {
-            jsonArray = new JSONArray(message);
-            frame = new double[jsonArray.length()][jsonArray.getJSONArray(0).length()];
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONArray innerArray = jsonArray.getJSONArray(i);
-                for (int j = 0; j < innerArray.length(); j++) {
-                    frame[i][j] = innerArray.getDouble(j);
-                }
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println("Frame: " + Arrays.deepToString(frame));
-
-        return frame;
-    }
-
-    /**
      * Destroy the view
      */
     @Override
@@ -437,22 +321,6 @@ public class FragmentOnlineCamera extends Fragment {
         super.onDestroyView();
         binding = null;
 
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (btSocket != null) {
-            try {
-                btSocket.close();
-                btInStream.close();
-                btOutStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         executorService.shutdown();
     }
 }

@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,20 +28,16 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Set;
+
 import cz.ima.btTof.R;
 import cz.ima.btTof.bluetooth.BluetoothClient;
 import cz.ima.btTof.bluetooth.BluetoothUtils;
 import cz.ima.btTof.databinding.FragmentBluetoothBinding;
 import cz.ima.btTof.lan.LanClient;
 import cz.ima.btTof.util.DeviceListAdapter;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Fragment for the Bluetooth connection
@@ -55,9 +50,6 @@ public class FragmentBluetooth extends Fragment {
     private FragmentBluetoothBinding binding;
     private BluetoothAdapter bluetoothAdapter;
     private ArrayList<DeviceListAdapter.BluetoothDeviceWrapper> pairedDevicesList;
-    private BluetoothSocket bluetoothSocket;
-    private InputStream inStream;
-    private OutputStream outStream;
 
     private String btDeviceName, btDeviceAddress;
 
@@ -150,6 +142,7 @@ public class FragmentBluetooth extends Fragment {
             Toast.makeText(requireContext(), "Enter the IP address of the server!", Toast.LENGTH_SHORT).show();
             return;
         }
+        System.out.println(serverIP);
 
         String serverPort = binding.portNumber.getText().toString();
         if (serverPort.isEmpty())
@@ -270,12 +263,10 @@ public class FragmentBluetooth extends Fragment {
         }
 
         try {
-            bluetoothSocket = (BluetoothSocket) device.getClass().getMethod("createInsecureRfcommSocket", int.class).invoke(device, 1);
+            BluetoothSocket bluetoothSocket = (BluetoothSocket) device.getClass().getMethod("createInsecureRfcommSocket", int.class).invoke(device, 1);
 
             assert bluetoothSocket != null;
-            inStream = bluetoothSocket.getInputStream();
-            outStream = bluetoothSocket.getOutputStream();
-        } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

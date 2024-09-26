@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import cz.ima.btTof.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * RecyclerViewAdapter class for the RecyclerView
@@ -89,9 +90,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public void bind(final String[] data, final OnItemClickListener listener) {
             JsonHelper jsonHelper = new JsonHelper(context);
 
+            System.out.println(Arrays.toString(data));
+            String date = jsonHelper.getFromJson(data[0]);
+            if (date.equals("")) date = getDate(data[0]);
+
             textName.setText(data[0]);
             textSize.setText(data[1]);
-            textDate.setText(jsonHelper.getFromJson(data[0]) + " ");
+            textDate.setText(date + " ");
             itemView.setOnClickListener(v -> listener.onItemClick(getAdapterPosition()));
         }
     }
@@ -122,5 +127,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
      */
     public interface OnItemLongClickListener {
         void onItemLongClick(int position);
+    }
+
+    /**
+     * Get the date from the file name - from the timestamp
+     * @param fileName - name of the file
+     * @return date in the format "EEEE HH:mm dd.MM.yyyy"
+     */
+    @SuppressLint("SimpleDateFormat")
+    private static String getDate(String fileName) {
+        String date = fileName.replaceAll(".json", "").replaceAll("data", "");
+        long timestamp = Long.parseLong(date);
+
+        String time = new java.text.SimpleDateFormat("EEEE HH:mm dd.MM.yyyy").format(new java.util.Date(timestamp));
+
+        return time.substring(0, 1).toUpperCase() + time.substring(1);
     }
 }

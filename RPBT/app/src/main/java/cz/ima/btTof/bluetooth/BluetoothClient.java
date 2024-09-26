@@ -7,39 +7,32 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Base64;
 import java.util.UUID;
 
 import cz.ima.btTof.util.DeviceListAdapter;
-import cz.ima.btTof.util.FileHelper;
 
 public class BluetoothClient {
     @SuppressLint("StaticFieldLeak")
     private static BluetoothClient instance;
     private final Context context;
 
-    private InputStream inStream;
     private BluetoothSocket bluetoothSocket;
     private final BluetoothAdapter bluetoothAdapter;
 
-    private OutputStream outStream;
+    private PrintWriter writer;
+    private BufferedReader reader;
 
     /**
      * Constructor - connects to the device and creates a socket
@@ -84,8 +77,8 @@ public class BluetoothClient {
      *
      * @return the Output Stream
      */
-    public OutputStream getOutStream() {
-        return outStream;
+    public PrintWriter getWriter() {
+        return writer;
     }
 
     /**
@@ -93,8 +86,8 @@ public class BluetoothClient {
      *
      * @return the Input Stream
      */
-    public InputStream getInStream() {
-        return inStream;
+    public BufferedReader getReader() {
+        return reader;
     }
 
     /**
@@ -103,6 +96,10 @@ public class BluetoothClient {
      * @param deviceWrapper - the device to connect to
      */
     private void connectToDevice(DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper) {
+        if (bluetoothAdapter == null) {
+            Log.e("BluetoothConnection", "Bluetooth adapter is null");
+            return;
+        }
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceWrapper.getAddress());
 
         try {
@@ -125,78 +122,17 @@ public class BluetoothClient {
             bluetoothSocket.connect();
 
             Toast.makeText(context, "Connected to " + deviceWrapper.getName(), Toast.LENGTH_SHORT).show();
-            System.out.println("\n\nConnected to " + deviceWrapper.getName());
+            System.out.println("Connected to " + deviceWrapper.getName());
 
-            inStream = bluetoothSocket.getInputStream();
-            outStream = bluetoothSocket.getOutputStream();
+            InputStream inStream = bluetoothSocket.getInputStream();
+            OutputStream outStream = bluetoothSocket.getOutputStream();
+
+            reader = new BufferedReader(new InputStreamReader(inStream));
+            writer = new PrintWriter(outStream, true);
         } catch (IOException e) {
             Log.e("BluetoothConnection", "Error connecting to device: " + deviceWrapper.getName(), e);
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             Log.e("BluetoothConnection", "Error creating socket", e);
-        }
-    }
-
-
-    /**
-     * Send the config file to the server
-     * @param context - context of the application
-     * @throws IOException - if an I/O error occurs
-     */
-    public void sendConfig(Context context) throws IOException {
-        File file = new File(context.getFilesDir(), "jsonFiles/config.json");
-        StringBuilder fileContent = new StringBuilder();
-
-        if (file.exists()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    fileContent.append(line).append("\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(context, "Please save the config!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String config = fileContent.toString();
-        System.out.println(config);
-
-        outStream.write((int) file.length());
-        outStream.write(config.getBytes());
-        outStream.flush();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void handleContent(InputStream is) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-        String fileName = reader.readLine();                        // read the file name
-        int fileSize = Integer.parseInt(reader.readLine());         // read the file size
-
-        System.out.println("fileName: " + fileName);
-        System.out.println("lengthContent: " + fileSize);
-
-        File file = FileHelper.getJsonFileDir(context, fileName);   // save the file to the directory
-
-        try (FileOutputStream fileOutput = new FileOutputStream(file);
-             BufferedOutputStream bufferedOutput = new BufferedOutputStream(fileOutput)) {
-
-            String line;
-            while (!(line = reader.readLine()).equals("EOF")) {     // read until the end of the file
-                byte[] decodedChunk = Base64.getDecoder().decode(line);
-                bufferedOutput.write(decodedChunk);                 // write the decoded chunk to the file
-            }
-
-            bufferedOutput.flush();
-
-            new Runnable() {
-                public void run() {
-                    Toast.makeText(context, "File received and saved: " + fileName, Toast.LENGTH_SHORT).show();
-                }
-            };
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

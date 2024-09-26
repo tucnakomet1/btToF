@@ -93,23 +93,8 @@ public class FragmentOfflinePlayer extends Fragment {
         if (SettingsValues.isDetected(12)) GRID_SIZE = 4;   // if 4x4
 
         // left and right tabs
-        AutoCompleteTextView autoCompleteTextViewLeft = binding.autoCompleteTextLeft;
-        ArrayAdapter<String> adapterLeft = new ArrayAdapter<>(FragmentOfflinePlayer.this.getContext(), R.layout.list_item, itemList);
-        autoCompleteTextViewLeft.setAdapter(adapterLeft);
-        autoCompleteTextViewLeft.setOnItemClickListener((adapterView, view, i, l) -> {
-            leftTab = adapterView.getItemAtPosition(i).toString();
-            leftFrames = frames.get(leftTab);
-            System.out.println(leftTab);
-        });
-
-        AutoCompleteTextView autoCompleteTextViewRight = binding.autoCompleteTextRight;
-        ArrayAdapter<String> adapterRight = new ArrayAdapter<>(FragmentOfflinePlayer.this.getContext(), R.layout.list_item, itemList);
-        autoCompleteTextViewRight.setAdapter(adapterRight);
-        autoCompleteTextViewRight.setOnItemClickListener((adapterView, view, i, l) -> {
-            rightTab = adapterView.getItemAtPosition(i).toString();
-            rightFrames = frames.get(rightTab);
-            System.out.println(rightTab);
-        });
+        setAutoCompleteTextViews(binding.autoCompleteTextLeft, true);
+        setAutoCompleteTextViews(binding.autoCompleteTextRight, false);
 
         return binding.getRoot();
     }
@@ -192,6 +177,27 @@ public class FragmentOfflinePlayer extends Fragment {
         // set up the stream runnable
         streamRunnable.setCameraView(cameraView);
         streamRunnable.setColorConfig(colorConfig);
+    }
+
+    /**
+     * Set up the auto complete text views
+     * @param autoCompleteTextView - auto complete text view
+     * @param left - left or right
+     */
+    private void setAutoCompleteTextViews(AutoCompleteTextView autoCompleteTextView, boolean left) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.list_item, itemList);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setOnItemClickListener((adapterView, view, i, l) -> {
+            if (left) {
+                leftTab = adapterView.getItemAtPosition(i).toString();
+                leftFrames = frames.get(leftTab);
+                System.out.println(leftTab);
+            } else {
+                rightTab = adapterView.getItemAtPosition(i).toString();
+                rightFrames = frames.get(rightTab);
+                System.out.println(rightTab);
+            }
+        });
     }
 
 

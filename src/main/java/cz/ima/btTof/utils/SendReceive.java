@@ -5,6 +5,9 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * Helping class for sending and receiving data
+ */
 public class SendReceive {
     private static final String SAVE_FOLDER = "save";
 

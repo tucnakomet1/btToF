@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -44,7 +45,7 @@ public class JsonParser extends AppCompatActivity {
 
         try {
             File jsonDir = new File(context.getFilesDir(), "jsonFiles");
-            File file = new File(jsonDir, fileName); // fileName je název souboru, který chcete načíst
+            File file = new File(jsonDir, fileName);
             InputStream inputStream = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 inputStream = Files.newInputStream(file.toPath());
@@ -96,5 +97,31 @@ public class JsonParser extends AppCompatActivity {
             e.printStackTrace();
         }
         return framesMap;
+    }
+
+
+    /**
+     * Make distant frames from string
+     * @param message - String in format "[[double], [double], ...]"
+     * @return frame - double[][] array
+     */
+    public static double[][] makeDistantFramesFromString(String message) {
+        JSONArray jsonArray;
+        double[][] frame;
+        try {
+            jsonArray = new JSONArray(message);
+            frame = new double[jsonArray.length()][jsonArray.getJSONArray(0).length()];
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONArray innerArray = jsonArray.getJSONArray(i);
+                for (int j = 0; j < innerArray.length(); j++) {
+                    frame[i][j] = innerArray.getDouble(j);
+                }
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        return frame;
     }
 }
