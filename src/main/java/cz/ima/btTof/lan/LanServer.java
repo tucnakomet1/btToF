@@ -3,20 +3,16 @@ package cz.ima.btTof.lan;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import cz.ima.btTof.utils.WriteJson;
+import cz.ima.btTof.utils.SendReceive;
 import cz.ima.btTof.tof.TofFunc;
+import cz.ima.btTof.utils.Util;
 
 /**
  * Class for handling the LAN server
  */
 public class LanServer {
-    private static final String SAVE_FOLDER = "save";
-
     private static final AtomicBoolean isStreaming = new AtomicBoolean(false), isRecording = new AtomicBoolean(false);
     private static TofFunc func;
 
@@ -28,7 +24,7 @@ public class LanServer {
         LanServer.func = func;
 
         try (ServerSocket serverSocket = new ServerSocket(8080)) {
-            System.out.println("Server is listening on port 8080");
+            System.out.println("Server is running on address: " + Util.getLocalIPAddress() + ":8080");
 
             while (true) {
                 Socket socket = serverSocket.accept();
@@ -62,34 +58,15 @@ public class LanServer {
                     System.out.println("Received command: " + command);
 
                     switch (command.toLowerCase()) {
-                        case "config" -> handleConfig(reader);          // handle the config command
-                        case "stream" -> handleStream(writer);          // handle the stream command
-                        case "record" -> handleRecord(writer, output);  // handle the record command
-                        default -> System.out.println("Unknown command");
+                        case "config" -> SendReceive.handleConfig(reader);  // handle the config command
+                        case "stream" -> handleStream(writer);              // handle the stream command
+                        case "record" -> handleRecord(writer);              // handle the record command
                     }
                 }
             } catch (IOException ex) {
                 System.out.println("Server exception: " + ex.getMessage());
                 ex.printStackTrace();
             }
-        }
-
-        /**
-         * Handle the config command - read the config info from the client
-         *
-         * @param reader reader to read the config info from
-         * @throws IOException - if an I/O error occurs
-         */
-        private void handleConfig(BufferedReader reader) throws IOException {
-            int length = Integer.parseInt(reader.readLine());   // Read length of config info
-
-            char[] configBuffer = new char[length];
-            reader.read(configBuffer, 0, length);           // Read the config info
-
-            String configInfo = new String(configBuffer);
-            WriteJson.handleConfig(configInfo);
-
-            System.out.println("Received config: " + configInfo);
         }
 
         /**
@@ -129,13 +106,10 @@ public class LanServer {
          * Handle the record command - start or stop the recording
          *
          * @param writer writer to send the data to
-         * @param output output stream to send the recorded file to
          */
-        private void handleRecord(PrintWriter writer, OutputStream output) {
-            if (isRecording.get())
-                stopRecording(writer, output);
-            else
-                startRecording();
+        private void handleRecord(PrintWriter writer) {
+            if (isRecording.get()) stopRecording(writer);
+            else startRecording();
         }
 
         /**
@@ -151,68 +125,18 @@ public class LanServer {
          * Stop the recording
          *
          * @param writer writer to send the data to
-         * @param output output stream to send the recorded file to
          */
-        private void stopRecording(PrintWriter writer, OutputStream output) {
+        private void stopRecording(PrintWriter writer) {
             System.out.println("Recording ended.");
 
             isRecording.set(false);
             String fileName = func.recording_end();
 
-            //handleStream(writer);
             isStreaming.set(false);
             stopThread = true;
-            System.out.println("Stream stopped.");
             startStream(writer);
 
-            sendRecordedFile(writer, fileName);
-
-            //handleStream(writer);
-        }
-
-        /**
-         * Send the recorded file to the client
-         *
-         * @param writer writer to send the data to
-         * @param fileName name of the recorded file
-         */
-        private void sendRecordedFile(PrintWriter writer, String fileName) {
-            String filePath = Paths.get(SAVE_FOLDER, fileName).toString();
-
-            File file = new File(filePath);
-            if (!file.exists()) {
-                System.out.println("File not found");
-                return;
-            }
-
-            try (FileInputStream fileInput = new FileInputStream(file);
-                BufferedInputStream bufferedInput = new BufferedInputStream(fileInput)) {
-
-                // send file name and file size
-                writer.println("content");
-                writer.println(fileName);
-                writer.println(file.length());
-                writer.flush();
-
-                System.out.println("Sending file: " + fileName);
-                System.out.println("File size: " + file.length());
-
-                // send file content in chunks -> 3*1024 bytes because of the Base64 encoding
-                byte[] buffer = new byte[3 * 1024];
-                int bytesRead;
-                while ((bytesRead = bufferedInput.read(buffer)) != -1) {
-                    String base64Chunk = Base64.getEncoder().encodeToString(Arrays.copyOf(buffer, bytesRead));
-                    writer.println(base64Chunk);
-                    writer.flush();
-                }
-
-                writer.println("EOF");
-                writer.flush();
-                System.out.println("File sent successfully.");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            SendReceive.sendRecordedFile(writer, fileName);
         }
     }
 }

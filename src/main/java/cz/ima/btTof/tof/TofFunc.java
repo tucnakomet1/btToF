@@ -75,8 +75,6 @@ public class TofFunc {
         } catch (Exception e) {
             logger.warning("No configuration exists, please use Save before starting the stream.");
 
-            //init_stream();
-
             e.printStackTrace();
         }
     }

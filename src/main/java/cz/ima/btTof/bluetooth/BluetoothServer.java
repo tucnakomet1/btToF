@@ -1,86 +1,70 @@
 package cz.ima.btTof.bluetooth;
 
+import cz.ima.btTof.tof.TofFunc;
+
 import javax.bluetooth.DiscoveryAgent;
 import javax.bluetooth.LocalDevice;
+import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.UUID;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
+/** Bluetooth server */
 public class BluetoothServer {
-    //private static final String SERVER_UUID = "1101"; // Random UUID for the server
-    private static UUID SERVER_UUID;
-    private static final String SERVER_NAME = "BluetoothServer"; // Name of the server
-    private static final String SERVER_URL = "btspp://localhost:" + SERVER_UUID + ";name=" + SERVER_NAME;
 
-    private StreamConnectionNotifier notifier;
+    /**
+     * Constructor - Create a Bluetooth server, then waiting for a connection
+     * */
+    public BluetoothServer(TofFunc func) {
+        printAllDevices();
 
-    public BluetoothServer() {
-        SERVER_UUID = new UUID("1101", true); //new UUID("d0c722b07e1511e1b0c40800200c9a66", false);//UUID.randomUUID();
-        System.out.println("Generated UUID: " + SERVER_UUID);
-
-        // start the server
         try {
-            LocalDevice localDevice = LocalDevice.getLocalDevice();
-            localDevice.setDiscoverable(DiscoveryAgent.GIAC);
+            UUID uuid = new UUID("1101", true);     // "1101" is standard UUID for Serial Port Profile
+            String connectionString = "btspp://localhost:" + uuid + ";name=BluetoothServer";
 
-            //notifier = (StreamConnectionNotifier) Connector.open(SERVER_URL);
-            String url = "btspp://localhost:" + SERVER_UUID.toString() + ";name=BluetoothServer";
-            notifier = (StreamConnectionNotifier) Connector.open(url);
-            System.out.println("Waiting for client connection...");
+            StreamConnectionNotifier notifier = (StreamConnectionNotifier) Connector.open(connectionString);
+            System.out.println("Bluetooth server is running. Waiting for connection...");
 
+            // Waiting for connection
             StreamConnection connection = notifier.acceptAndOpen();
-            System.out.println("Client connected.");
+            System.out.println("Device connected!");
 
-            // handle the connection
-            handleConnection(connection);
-        } catch (IOException e) {
+            // Start the receiver and sender threads
+            BluetoothReceiver receiver = new BluetoothReceiver(connection, func);
+            Thread receiverThread = new Thread(receiver);
+            receiverThread.start();
+
+            // Close the connection
+            receiverThread.join();
+
+            connection.close();
+            notifier.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void handleConnection(StreamConnection connection) {
-        try (InputStream inStream = connection.openInputStream(); OutputStream outStream = connection.openOutputStream()) {
-            // open the input and output streams
 
+    /**
+     * Print all paired devices
+     */
+    public void printAllDevices() {
+        try {
+            LocalDevice localDevice = LocalDevice.getLocalDevice();     // Local Bluetooth device
+            System.out.println("Bluetooth local Name: '" + localDevice.getFriendlyName() + "' and Address: '" + localDevice.getBluetoothAddress() + "'");
 
-            // Odeslání náhodně generovaného UUID klientovi
-            outStream.write(SERVER_UUID.toString().getBytes());
-            outStream.flush();
-            System.out.println("Sent UUID to client.");
+            // Get the discovery agent - used to find devices
+            DiscoveryAgent agent = localDevice.getDiscoveryAgent();
+            RemoteDevice[] pairedDevices = agent.retrieveDevices(DiscoveryAgent.PREKNOWN);
 
-            /*
-            // read the data from the client
-            byte[] buffer = new byte[1024];
-            int bytesRead = inStream.read(buffer);
-
-            // print the data
-            System.out.println("Received: " + new String(buffer, 0, bytesRead));
-
-            // send a response to the client
-            outStream.write("Hello from server!".getBytes());*/
-
-            // Send ping1 to the client
-            String ping1 = "ping1";
-            outStream.write(ping1.getBytes());
-            outStream.flush();
-            System.out.println("Sent: " + ping1);
-
-            // Receive ping2 from the client
-            byte[] buffer = new byte[1024];
-            int bytesRead = inStream.read(buffer);
-            String received = new String(buffer, 0, bytesRead);
-            System.out.println("Received: " + received);
-
-            connection.close();
-            notifier.close();
-            System.out.println("Connection closed.");
-
-            // close the streams and the connection
-        } catch (RuntimeException | IOException e) {
+            if (pairedDevices != null) {
+                System.out.println("Paired devices:");
+                for (RemoteDevice device : pairedDevices) {
+                    System.out.println("Device: " + device.getFriendlyName(false) + " [" + device.getBluetoothAddress() + "]");
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
