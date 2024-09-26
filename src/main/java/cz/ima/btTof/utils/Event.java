@@ -2,12 +2,19 @@ package cz.ima.btTof.utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** Event class - simple event flag */
+/**
+ * Class to represent an event
+ */
 public class Event {
     private final AtomicBoolean flag = new AtomicBoolean(false);
 
-    /** Method to check if the event is set
-     * @return true if the event is set, false otherwise */
+    /** Constructor */
+    public Event() {}
+
+    /**
+     * Method to check if the event is set
+     * @return true if the event is set, false otherwise
+     */
     public boolean isSet() {
         return flag.get();
     }

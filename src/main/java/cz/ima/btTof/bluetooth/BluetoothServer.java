@@ -10,12 +10,15 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
-/** Bluetooth server */
+/**
+ * Class for handling the Bluetooth server
+ */
 public class BluetoothServer {
 
     /**
      * Constructor - Create a Bluetooth server, then waiting for a connection
-     * */
+     * @param func function to call when starting the stream
+     */
     public BluetoothServer(TofFunc func) {
         printAllDevices();
 

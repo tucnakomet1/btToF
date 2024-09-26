@@ -8,11 +8,15 @@ import cz.ima.btTof.tof.TofFunc;
 
 import java.util.Scanner;
 
-/** Main class - entry point of the application */
+/**
+ * Main class of the application
+ */
 public class Main {
 
-    /** Main method - entry point of the application
-     * @param args command line arguments */
+    /**
+     * Main method - entry point of the application
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         // get all available COM ports and check if there are any
         GetCOM gc = new GetCOM();

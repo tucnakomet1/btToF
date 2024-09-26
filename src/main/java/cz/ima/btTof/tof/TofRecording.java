@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/* Class for handling the ToF sensor recording */
+/**
+ * Class for handling the ToF sensor recording
+ */
 public class TofRecording {
     private static final String SAVE_FOLDER = "save";
 

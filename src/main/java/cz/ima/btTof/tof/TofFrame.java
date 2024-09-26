@@ -1,9 +1,7 @@
 package cz.ima.btTof.tof;
 
-import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /** Class for handling the ToF sensor frame */
@@ -64,22 +62,6 @@ public class TofFrame {
      * @return serialized frame */
     public Map<String, Object> serialize() {
         return data.serialize();
-    }
-
-    /** Method for deserializing the frame from a map
-     * @param input map to deserialize
-     * @return deserialized frame */
-    public static TofFrame deserialize(String input) {
-        // Convert from JSON string to map using JSONObject
-        JSONObject jsonObject = new JSONObject(input);
-        Map<String, Object> map = new HashMap<>();
-        for (String key : jsonObject.keySet()) {
-            map.put(key, jsonObject.get(key));
-        }
-
-        FrameData data = FrameData.deserialize(map);
-        int[] size = {data.getDistance().length, data.getDistance()[0].length};
-        return new TofFrame(data, size);
     }
 
     /** Method for getting the distance of the first target in each zone

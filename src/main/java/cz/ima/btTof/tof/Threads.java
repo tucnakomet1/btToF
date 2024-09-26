@@ -35,7 +35,10 @@ public class Threads {
 
     /** Constructor
      * @param port COM port
-     * @param config configuration data */
+     * @param config configuration data
+     * @param e_recording event for recording
+     * @param tof_recording recording object
+     * @param writer writer for writing the data */
     public Threads(SerialPort port, ConfigData config, Event e_recording, TofRecording tof_recording, PrintWriter writer) {
         Threads.port = port;
         Threads.config = config;

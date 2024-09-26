@@ -7,6 +7,9 @@ import javax.microedition.io.StreamConnection;
 import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Class for handling the Bluetooth receiver
+ */
 public class BluetoothReceiver implements Runnable {
     private final StreamConnection connection;
     private final TofFunc func;

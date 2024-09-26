@@ -34,7 +34,7 @@ public class FrameData {
     }
 
     /** Method for serializing the data to Map
-     * @return Map<String, Object>  serialized data */
+     * @return Map&lt;String, Object&gt;  serialized data */
     public Map<String, Object> serialize() {
         Map<String, Object> serMap = new HashMap<>();
         serMap.put("ambient_per_spad", convertToJSONArray(cropData(ambient_per_spad)));
@@ -131,7 +131,8 @@ public class FrameData {
                 '}';
     }
 
-
+    /** Method for checking if the data is empty
+     * @return true if the data is empty, false otherwise */
     public boolean isEmpty() {
         // check if all the data of FrameData is 0
         for (int[][] subArray : distance) {

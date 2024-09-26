@@ -58,7 +58,10 @@ public class TofFunc {
         return configData;
     }
 
-    /** Start the ToF sensor stream - open the COM port and start the thread */
+    /**
+     * Start the ToF sensor stream - open the COM port and start the thread
+     * @param writer writer to write the data to
+     */
     public void start_stream(PrintWriter writer) {
         try {
             checkOpenPortAndSendInitBytes();
@@ -105,7 +108,8 @@ public class TofFunc {
 
 
     /** Stop the recording
-     *  if recording is on -> stop it and save the result */
+     *  if recording is on -> stop it and save the result
+     * @return the name of the recorded file */
     public String recording_end() {
         th.stopRecording();
         return th.recording_end();

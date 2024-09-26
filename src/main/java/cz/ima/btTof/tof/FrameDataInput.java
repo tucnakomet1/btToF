@@ -5,16 +5,16 @@ import java.util.Map;
 
 /** Class for handling the ToF sensor frame data input */
 public class FrameDataInput {
-    public double[][][] ambientPerSpad;
-    public int[][][] nbSpadsEnabled;
-    public int[][][] nbTargetDetected;
-    public double[][][] signalPerSpad;
-    public double[][][] rangeSigma;
-    public double[][][] distance;
-    public int[][][] targetStatus;
-    public double[][][] reflectancePercent;
-    public double[][][] motionIndicator;
-    public double[][][] accel;
+    private final double[][][] ambientPerSpad;
+    private final int[][][] nbSpadsEnabled;
+    private final int[][][] nbTargetDetected;
+    private final double[][][] signalPerSpad;
+    private final double[][][] rangeSigma;
+    private final double[][][] distance;
+    private final int[][][] targetStatus;
+    private final double[][][] reflectancePercent;
+    private final double[][][] motionIndicator;
+    private final double[][][] accel;
 
     /** Constructor
      * @param data Map with the data */
@@ -38,7 +38,7 @@ public class FrameDataInput {
     }
 
     /** Method for converting to Map
-     * @return Map<String, Object> converted data */
+     * @return Map&lt;String, Object&gt; converted data */
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("ambientPerSpad", this.ambientPerSpad);
