@@ -2,6 +2,8 @@
 
 > The programming *javadoc* documentation is inside the `docs/` folder. Just run `index.html`.
 
+> Java server app is inside the `src/` folder and the mobile app is inside `RPBT/`.
+
 The ToF camera is a device that uses Time-of-Flight technology to measure distance. Camera emits infrared light that bounces off objects and back to the sensor. Based on time, the light takes to travel back and forth, the camera calculates the distance to each object, which enabling accurate detection of movement and shapes in space.
 
 There are already similar projects that have focused on displaying footage from ToF cameras, for example [ArduCAM](https://github.com/ArduCAM/Arducam_tof_camera), or [espros](https://github.com/espros/epc-tofcam-toolkit). However, no implementation is yet in Java and no implementation provides transmission to a mobile phone via Bluetooth. 

@@ -2,27 +2,39 @@
 
 <html lang="en">
 <head>
-	<title>Rocnikovy projekt</title>
+	<title>btToF</title>
 	
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 	<meta name="author" content="Karel Velička">
 </head>
 <body>
-	<h1>Rocnikovy projekt</h1>
+	<h1>btToF</h1>
 
-	<p><a href="https://www.mff.cuni.cz/">MFF UK</a>.</p>
+	<p>The ToF camera is a device that uses Time-of-Flight technology to measure distance. Camera emits infrared light that bounces off objects and back to the sensor. Based on time, the light takes to travel back and forth, the camera calculates the distance to each object, which enabling accurate detection of movement and shapes in space.</p>
+	<p>There are already similar projects that have focused on displaying footage from ToF cameras, for example <a href="https://github.com/ArduCAM/Arducam_tof_camera">ArduCAM</a>, or <a href="https://github.com/espros/epc-tofcam-toolkit">espros</a>. However, no implementation is yet in Java and no implementation provides transmission to a mobile phone via Bluetooth. </p>
+	<p>This project therefore focuses on the development of a mobile application on Android that allows the user to communicate via Bluetooth or via LAN to remotely record and play back recorded content from camera.</p>
 	
-	<h2>Used packages</h2>
+	<h2 id="used-technologies">Used technologies</h2>
+	<p>The project uses <em>Nucleo board STM32F401</em> devices together with <em>VL53L5 ToF</em> camera and <em>Raspberry Pi 5</em>.</p>
+	<p>For creating the Android application <a href="https://developer.android.com/studio/releases/past-releases/as-flamingo-release-notes">Android Studio Flamingo</a> and <a href="https://www.jetbrains.com/idea/">IntelliJ IDEA</a> was used with Java 21 language.</p>
+	<p>Used libraries: </p>
 	<ul>
-		<li><strong><a href="https://mvnrepository.com/artifact/org.json/json">JSON In Java</a></strong> - library for working with <code>.json</code> files</li>
+	<li><a href="https://mvnrepository.com/artifact/org.json/json">JSON In Java</a> - library to make it easier to work with <code>.json</code> files</li>
+	<li><a href="https://mvnrepository.com/artifact/com.fazecast/jSerialComm">JSerialComm</a> - a library that simplifies working with ports (devices connected via USB)</li>
+	<li><a href="https://mvnrepository.com/artifact/io.ultreia/bluecove">BlueCove</a> - a library for Bluetooth communication</li>
 	</ul>
-
-
 
 	<h2>Most important classes</h2>
 	<ul>
-		<li><code><a href="com/rocnikovyprojekt/Main.html">Main</a></code> - entry point of the application.</li>
+		<li><code><a href="cz/ima/btTof/Main.html">Main</a></code> - entry point of the application.</li>
+		<li><code><a href="cz/ima/btTof/bluetooth/BluetoothServer.html">BluetoothServer</a></code> - starts the bluetooth server and threads for communication</li>
+		<li><code><a href="cz/ima/btTof/lan/LanServer.html">LanServer</a></code> - starts the LAN server and threads for communication/li>
+		<li><code><a href="cz/ima/btTof/utils/ConfigData.html">ConfigData</a></code> - handles configuration data.</li>
+		<li><code><a href="cz/ima/btTof/tof/FrameData.html">FrameData</a></code> - class for handling the ToF sensor frame data</li>
+		<li><code><a href="cz/ima/btTof/tof/Threads.html">Threads</a></code> - handles Threads of the ToF sensor. Sends frames regularly (20 times per second)</li>
+		<li><code><a href="cz/ima/btTof/tof/TofFunc.html">TofFunc</a></code> - Main class for initialization communication with ToF camera. Sends init bytes, starts communication threads. </li>
+		<li><code><a href="cz/ima/btTof/tof/TofRecording.html">TofRecording</a></code> - handles image recording. Saves in the correct format to a <code>.json</code> file (which is saved to the <code>save/</code> folder) as <code>dataTIMESTAMP.json</code>. </li>
 	</ul>
 </body>
 </html>  
