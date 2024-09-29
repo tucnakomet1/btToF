@@ -1,6 +1,7 @@
 package cz.ima.btTof.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +53,7 @@ public class FragmentOnlineCamera extends Fragment {
     private List<double[][]> leftFrames, rightFrames;
     private Map<String, List<double[][]>> frames;
 
-    private boolean isRunning = false, isRecording = false, isConnected = false, isStreaming = false, isBluetooth = false;
+    private boolean isRunning = false, isRecording = false, isStreaming = false, isBluetooth = false, isConnected = false;;
     private int minValue = 20, maxValue = 2000;
     private int GRID_SIZE = 8, TEXT_SIZE = 18;  // 8x8 grid, size of each square in pixels
 
@@ -184,7 +185,7 @@ public class FragmentOnlineCamera extends Fragment {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
+        } else noConnection();
     }
 
     /**
@@ -241,12 +242,12 @@ public class FragmentOnlineCamera extends Fragment {
             writer = client.getWriter();
             reader = client.getReader();
 
-            binding.pairedView.setImageResource(R.drawable.circle_green);
-            isConnected = true;
-            binding.ButtonPlayPause.setText("Stream");
-        } else {
-            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(requireContext(), "No connection to the server", Toast.LENGTH_SHORT).show());
-        }
+            if (writer != null) {
+                binding.pairedView.setImageResource(R.drawable.circle_green);
+                isConnected = true;
+                binding.ButtonPlayPause.setText("Stream");
+            } else noConnection();
+        } else noConnection();
     }
 
     /**
@@ -260,10 +261,12 @@ public class FragmentOnlineCamera extends Fragment {
             btWriter = btClient.getWriter();
             btReader = btClient.getReader();
 
-            isConnected = true;
-            isBluetooth = true;
-            binding.pairedView.setImageResource(R.drawable.circle_green);
-        }
+            if (btWriter != null) {
+                isConnected = true;
+                isBluetooth = true;
+                binding.pairedView.setImageResource(R.drawable.circle_green);
+            } else noConnection();
+        } else noConnection();
     }
 
     /**
@@ -283,7 +286,8 @@ public class FragmentOnlineCamera extends Fragment {
      */
     private void sendMessage(String message) {
         PrintWriter commonWriter = isBluetooth ? btWriter : writer;
-        commonWriter.println(message);
+        if (commonWriter != null) commonWriter.println(message);
+        else noConnection();
     }
 
     /**
@@ -292,9 +296,11 @@ public class FragmentOnlineCamera extends Fragment {
     private void listenForServerResponse(BufferedReader listenReader) {
         try {
             String message;
+            if (listenReader == null) return;
             while ((message = listenReader.readLine()) != null) {
                 if (message.contains("content")) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        showAlertSendingFile();
                         SendReceive.handleContent(requireContext(), listenReader);
                     }
                     sendMessage("stream");
@@ -311,6 +317,29 @@ public class FragmentOnlineCamera extends Fragment {
         } catch (IOException ex) {
             System.out.println("Error reading server response: " + ex.getMessage());
         }
+    }
+
+    /**
+     * Show alert that the file is being sent from the server.
+     */
+    private void showAlertSendingFile() {
+        requireActivity().runOnUiThread(() -> {
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Wait")
+                .setMessage("The file is being sent from the server to your device. Please wait. It may take a while.\n\n" +
+                        "Sending is done when streaming is started again.")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {}).show();
+        });
+    }
+
+    /**
+     * No connection to the server
+     */
+    private void noConnection() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() ->Toast.makeText(requireContext(), "No connection to the server", Toast.LENGTH_SHORT).show());
+
+        binding.pairedView.setImageResource(R.drawable.circle_red);
     }
 
     /**

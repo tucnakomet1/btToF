@@ -122,7 +122,12 @@ public class FragmentBluetooth extends Fragment {
             scanDevices();
         });
         binding.ConnectBtButton.setOnClickListener(v -> {
-            DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper = pairedDevicesList.get(BluetoothUtils.findWrapperByName(pairedDevicesList, btDeviceName));
+            int index = BluetoothUtils.findWrapperByName(pairedDevicesList, btDeviceName);
+            if (index == -1) {
+                Toast.makeText(requireContext(), "No paired device found!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper = pairedDevicesList.get(index);
 
             BluetoothClient.getInstance(requireContext(), deviceWrapper, bluetoothAdapter);
 

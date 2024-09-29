@@ -96,10 +96,10 @@ public class BluetoothClient {
      * @param deviceWrapper - the device to connect to
      */
     private void connectToDevice(DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper) {
-        if (bluetoothAdapter == null) {
+        /*if (bluetoothAdapter == null) {
             Log.e("BluetoothConnection", "Bluetooth adapter is null");
             return;
-        }
+        }*/
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceWrapper.getAddress());
 
         try {
@@ -118,7 +118,11 @@ public class BluetoothClient {
             bluetoothSocket = device.createRfcommSocketToServiceRecord(uuid);
 
             bluetoothSocket = (BluetoothSocket) device.getClass().getMethod("createInsecureRfcommSocket", int.class).invoke(device, 1);
-            assert bluetoothSocket != null;
+            if (bluetoothSocket == null) {
+                Toast.makeText(context, "Bluetooth server is probably not running.", Toast.LENGTH_SHORT).show();
+                Log.e("BluetoothConnection", "Error creating socket. Bluetooth server is probably not running.");
+                return;
+            }
             bluetoothSocket.connect();
 
             Toast.makeText(context, "Connected to " + deviceWrapper.getName(), Toast.LENGTH_SHORT).show();
@@ -130,7 +134,8 @@ public class BluetoothClient {
             reader = new BufferedReader(new InputStreamReader(inStream));
             writer = new PrintWriter(outStream, true);
         } catch (IOException e) {
-            Log.e("BluetoothConnection", "Error connecting to device: " + deviceWrapper.getName(), e);
+            Log.e("BluetoothConnection", "Error connecting to device: " + deviceWrapper.getName() + ". Bluetooth server is probably not running.", e);
+            Toast.makeText(context, "Bluetooth server is probably not running.", Toast.LENGTH_SHORT).show();
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             Log.e("BluetoothConnection", "Error creating socket", e);
         }
