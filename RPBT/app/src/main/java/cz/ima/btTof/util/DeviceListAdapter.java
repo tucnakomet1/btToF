@@ -23,6 +23,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
 
     /**
      * Constructor
+     * @param context Context
+     * @param devices List of devices
      */
     public DeviceListAdapter(Context context, ArrayList<BluetoothDeviceWrapper> devices) {
         this.context = context;
@@ -79,15 +81,28 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
         private final String name;
         private final String address;
 
+        /**
+         * Constructor of the wrapper (inner) class
+         * @param name Name of the device
+         * @param address Address of the device
+         */
         public BluetoothDeviceWrapper(String name, String address) {
             this.name = name;
             this.address = address;
         }
 
+        /**
+         * Get the name of the device
+         * @return Name of the device
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Get the address of the device
+         * @return Address of the device
+         */
         public String getAddress() {
             return address;
         }

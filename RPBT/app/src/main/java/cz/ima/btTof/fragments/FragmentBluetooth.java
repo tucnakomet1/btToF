@@ -53,10 +53,10 @@ public class FragmentBluetooth extends Fragment {
 
     private String btDeviceName, btDeviceAddress;
 
-    String[] permissions = {Manifest.permission.BLUETOOTH_CONNECT};
+    private final String[] permissions = {Manifest.permission.BLUETOOTH_CONNECT};
 
+    /** Constructor */
     public FragmentBluetooth() {}
-
 
     /**
      * Create the view of the Bluetooth fragment

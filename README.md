@@ -38,7 +38,7 @@ Used libraries:
 <a name="downjar"></a>
 ### Download jar file from releases
 
-Download the latest [release](https://gitlab.mff.cuni.cz/teaching/nprg045/hnetynka/2024-velicka/-/releases/1.0) of the mobile app ([`.app`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/59b3265fb0e331fcfd80939a7e5733ed/btTof.apk)) and [`.tar.gz`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/b894906eecb50a31942248f52873adef/btTof_v1.0.tar.gz) file.
+Download the latest [release](https://gitlab.mff.cuni.cz/teaching/nprg045/hnetynka/2024-velicka/-/releases/1.0) of the mobile app ([`.app`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/ba3a8ea0a938573d7a6e67517bb676d0/btToF.apk)) and [`.tar.gz`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/b894906eecb50a31942248f52873adef/btTof_v1.0.tar.gz) file.
 
 ```bash
 tar -xvzf btTof_v1.0.tar.gz
@@ -94,3 +94,11 @@ How to connect to Bluetooth/ LAN:
 |              Config               |               Live camera                |              Video player               |                 Bluetooth settings                  |
 | ------------------------------- | ----------------------------------------- | --------------------------------------- | --------------------------------------------------- |
 | ![config](img/config.jpg) | ![live camera](img/camera.jpg) | ![video player](img/player.jpg) | ![Bluetooth settings](img/bluetooth.jpg) |
+
+
+## Errors
+
+In case of:
+> `javax.bluetooth.ServiceRegistrationException: Can not open SDP session. [13] Operation denied`
+
+Run `sudo chmod 777 /var/run/sdp`

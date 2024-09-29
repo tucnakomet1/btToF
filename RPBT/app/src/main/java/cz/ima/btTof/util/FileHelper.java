@@ -24,6 +24,10 @@ import java.util.Map;
  * Helper class for file operations
  */
 public class FileHelper {
+
+    /** Constructor */
+    public FileHelper() {}
+
     /**
      * Copies a file to the internal storage of the application
      * @param uri - the URI of the file

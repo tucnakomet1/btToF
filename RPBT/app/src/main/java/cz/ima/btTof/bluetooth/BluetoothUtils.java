@@ -4,7 +4,13 @@ import java.util.ArrayList;
 
 import cz.ima.btTof.util.DeviceListAdapter;
 
+/**
+ * Utility class for Bluetooth - contains helper methods (findWrapperByName)
+ */
 public class BluetoothUtils {
+
+    /** Constructor */
+    public BluetoothUtils() {}
 
     /**
      * Find the index of the device with the given name in the list of paired devices

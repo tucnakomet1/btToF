@@ -56,7 +56,7 @@ public class FragmentOfflinePlayer extends Fragment {
     private Handler handler;
     private ImageView cameraView;
     private TextView counterText;
-    StreamRunnable streamRunnable;
+    private StreamRunnable streamRunnable;
     private ColorConfig colorConfig;
     private List<double[][]> distanceFrames, leftFrames, rightFrames;
     private Map<String, List<double[][]>> frames;
@@ -69,6 +69,9 @@ public class FragmentOfflinePlayer extends Fragment {
     private final String[] itemList = {
             "ambient_per_spad", "nb_spads_enabled", "nb_target_detected", "signal_per_spad",
             "range_sigma", "distance", "target_status", "reflectance_percent", "motion_indicator", "none"};
+
+    /** Constructor */
+    public FragmentOfflinePlayer() { }
 
     /**
      * Create the view - set up the view
@@ -98,7 +101,6 @@ public class FragmentOfflinePlayer extends Fragment {
 
         return binding.getRoot();
     }
-
 
     /**
      * On view created - set up the view
@@ -363,7 +365,14 @@ public class FragmentOfflinePlayer extends Fragment {
         private ColorConfig colorConfig;
         private final int GRID_SIZE, CELL_SIZE;
 
-        // Constructor for passing necessary dependencies
+        /**
+         * Constructor for passing necessary dependencies
+         * @param handler - handler
+         * @param cameraView - camera view
+         * @param colorConfig - color config
+         * @param GRID_SIZE - grid size
+         * @param CELL_SIZE - cell size
+         */
         public StreamRunnable(Handler handler, ImageView cameraView, ColorConfig colorConfig, int GRID_SIZE, int CELL_SIZE) {
             this.handler = handler;
             this.cameraView = cameraView;
@@ -384,10 +393,18 @@ public class FragmentOfflinePlayer extends Fragment {
             }
         }
 
+        /**
+         * Set the camera view
+         * @param cameraView - camera view (ImageView)
+         */
         public void setCameraView(ImageView cameraView) {
             this.cameraView = cameraView;
         }
 
+        /**
+         * Set the color config
+         * @param colorConfig - color config
+         */
         public void setColorConfig(ColorConfig colorConfig) {
             this.colorConfig = colorConfig;
         }

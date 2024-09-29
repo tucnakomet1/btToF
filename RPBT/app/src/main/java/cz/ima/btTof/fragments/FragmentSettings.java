@@ -26,6 +26,9 @@ public class FragmentSettings extends Fragment {
 
     private FragmentSettingsBinding binding;
 
+    /** Constructor */
+    public FragmentSettings() {}
+
     /**
      * Create the view of the settings fragment
      *

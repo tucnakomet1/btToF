@@ -37,6 +37,9 @@ import cz.ima.btTof.util.ColorConfig;
 import cz.ima.btTof.util.JsonParser;
 import cz.ima.btTof.util.SendReceive;
 
+/**
+ * Fragment for online player - used for streaming and recording the frames from the server.
+ */
 public class FragmentOnlineCamera extends Fragment {
     private PrintWriter btWriter;
     private BufferedReader btReader;
@@ -49,13 +52,16 @@ public class FragmentOnlineCamera extends Fragment {
     // rest
 
     private FragmentCameraBinding binding;
-    StreamRunnable streamRunnable;
+    private StreamRunnable streamRunnable;
     private List<double[][]> leftFrames, rightFrames;
     private Map<String, List<double[][]>> frames;
 
     private boolean isRunning = false, isRecording = false, isStreaming = false, isBluetooth = false, isConnected = false;;
     private int minValue = 20, maxValue = 2000;
     private int GRID_SIZE = 8, TEXT_SIZE = 18;  // 8x8 grid, size of each square in pixels
+
+    /** Constructor */
+    public FragmentOnlineCamera() {}
 
     /**
      * Create the view - set up the view
@@ -198,7 +204,14 @@ public class FragmentOnlineCamera extends Fragment {
         private ColorConfig colorConfig;
         private final int GRID_SIZE, CELL_SIZE;
 
-        // Constructor for passing necessary dependencies
+        /**
+         * Constructor for passing necessary dependencies
+         * @param handler - handler
+         * @param cameraView - camera view
+         * @param colorConfig - color config
+         * @param GRID_SIZE - grid size
+         * @param CELL_SIZE - cell size
+         */
         public StreamRunnable(Handler handler, ImageView cameraView, ColorConfig colorConfig, int GRID_SIZE, int CELL_SIZE) {
             this.handler = handler;
             this.cameraView = cameraView;
@@ -218,14 +231,27 @@ public class FragmentOnlineCamera extends Fragment {
                 });
             }
         }
+
+        /**
+         * Set the frame data
+         * @param frameData - frame data
+         */
         public void setFrameData(double[][] frameData) {
             this.frameData = frameData;
         }
 
+        /**
+         * Set the camera view
+         * @param cameraView - camera view
+         */
         public void setCameraView(ImageView cameraView) {
             this.cameraView = cameraView;
         }
 
+        /**
+         * Set the color config
+         * @param colorConfig - color config
+         */
         public void setColorConfig(ColorConfig colorConfig) {
             this.colorConfig = colorConfig;
         }

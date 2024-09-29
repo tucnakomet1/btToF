@@ -23,6 +23,9 @@ import java.util.UUID;
 
 import cz.ima.btTof.util.DeviceListAdapter;
 
+/**
+ * Bluetooth client class - connects to a device and creates a socket
+ */
 public class BluetoothClient {
     @SuppressLint("StaticFieldLeak")
     private static BluetoothClient instance;
@@ -96,10 +99,10 @@ public class BluetoothClient {
      * @param deviceWrapper - the device to connect to
      */
     private void connectToDevice(DeviceListAdapter.BluetoothDeviceWrapper deviceWrapper) {
-        /*if (bluetoothAdapter == null) {
+        if (bluetoothAdapter == null) {
             Log.e("BluetoothConnection", "Bluetooth adapter is null");
             return;
-        }*/
+        }
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceWrapper.getAddress());
 
         try {

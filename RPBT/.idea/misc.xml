@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/Plocha" />
+    <option name="OPTION_SCOPE" value="private" />
     <option name="OPTION_INCLUDE_LIBS" value="true" />
     <option name="OPTION_LINK_TO_JDK_DOCS" value="true" />
   </component>
