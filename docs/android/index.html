@@ -49,6 +49,32 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1 class="title">app API</h1>
 </div>
+<div class="block"><h1 id="bttof-heading">Server documentation (<a href="../index.html">Android documentation here</a>)</h1>
+
+    <p>Documentation for Android app. It works as a bluetooth/LAN client and as a video player.</p>
+    
+    <h2 id="used-technologies">Used technologies</h2>
+    <a href="https://developer.android.com/studio/releases/past-releases/as-flamingo-release-notes">Android Studio Flamingo</a> with Gradle 8.0.
+
+    <h2 id="most-important-classes-heading">Most important classes</h2>
+    <ul>
+            <li><code><a href="cz/ima/btTof/MainActivity.html">MainActivity</a></code> - entry point of the application.</li>
+            <li><code><a href="cz/ima/btTof/bluetooth/BluetoothClient.html">BluetoothClient</a></code> - connects to a bluetooth server and creates a socket. The communication is in <code><a href="cz/ima/btTof/fragments/FragmentBluetooth.html">FragmentBluetooth</a></code> and  <code><a href="cz/ima/btTof/fragments/FragmentOnlineCamera.html">FragmentOnlineCamera</a></code>.</li>
+            <li><code><a href="cz/ima/btTof/lan/LanClient.html">LanClient</a></code> - connects to a LAN server and creates a socket. The communication is in <code><a href="cz/ima/btTof/fragments/FragmentBluetooth.html">FragmentBluetooth</a></code> and  <code><a href="cz/ima/btTof/fragments/FragmentOnlineCamera.html">FragmentOnlineCamera</a></code>.</li>
+            <li><code><a href="cz/ima/btTof/util/ColorConfig.html">ColorConfig</a></code> - handles the color configuration of the heatmap. Creates color from number value, creates empty screen woth message, creates bitmap of the heatmap.</li>
+            <li><code><a href="cz/ima/btTof/util/JsonParser.html">JsonParser</a></code> - Parse JSON files with frame data from the server and returns it as a map.</li>
+            <li><code><a href="cz/ima/btTof/util/FileHelper.html">FileHelper</a></code> - for file operations - like copy file into internal storage, list files, get directory...</li>
+            <li><code><a href="cz/ima/btTof/util/SendReceive.html">SendReceive</a></code> - reads the config file and sends it to the server. Also receives the JSON files (frames data) and saves them into internal storage.</li>
+    </ul>
+
+    <h2 id="fragments-heading">Fragmets</h2>
+    <ul>
+        <li><code><a href="cz/ima/btTof/fragments/FragmentBluetooth.html">FragmentBluetooth</a></code> - Fragment for the Bluetooth and LAN connection. Connects to the server.</li>
+        <li><code><a href="cz/ima/btTof/fragments/FragmentOfflinePlayer.html">FragmentOfflinePlayer</a></code> - Used for playing offline records. List and load files.</li>
+        <li><code><a href="cz/ima/btTof/fragments/FragmentOnlineCamera.html">FragmentOnlineCamera</a></code> - Used for streaming and reording the frames from the server. Sends the config file, receives frame data.</li>
+        <li><code><a href="cz/ima/btTof/fragments/FragmentSettings.html">FragmentSettings</a></code> - Fragment for the settings page - saves the config file.</li>
+    </ul>
+</div>
 <div id="all-packages-table">
 <div class="caption"><span>Packages</span></div>
 <div class="summary-table two-column-summary">
