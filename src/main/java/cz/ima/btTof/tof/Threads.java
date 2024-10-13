@@ -47,7 +47,6 @@ public class Threads {
         Threads.writer = writer;
 
         parser = get_parser_dict(config);       // Map<String, Object[]>
-        printParser(parser);
     }
 
 
@@ -180,7 +179,6 @@ public class Threads {
     /** Save the recording
      * @return String (the name of the file) */
     public String recording_save() {
-        // TODO: get these info from the user
         String description = "description";
         String environment = "environment";
         String sensor_type = "sensor type";
@@ -286,10 +284,10 @@ public class Threads {
                 for (int subItem : (int[]) value[1])
                     byteLength *= subItem;
 
-
                 List<Integer> values = new ArrayList<>(byteLength);
                 Integer val = (Integer) value[2];
 
+                // Read the data from the port
                 byte[] byteArray = new byte[byteLength * val];
                 port.readBytes(byteArray, byteArray.length);
 
@@ -302,12 +300,30 @@ public class Threads {
                     if (val == 1)
                         values.add((int) byteBuffer.get(i));
                     else if (val == 2)
-                        values.add((int) byteBuffer.getShort(i * val));
+                        values.add((int) byteBuffer.getShort(i * 2));
+
                 }
                 int[] intArray = values.stream().mapToInt(Integer::intValue).toArray();
 
-                // Reshape the data into a multi-dimensional array
                 data.put(key, reshape(intArray, (int[]) value[1]));
+                byteBuffer.clear();
+            }
+        }
+
+        // Check if the distance values should be zeroed out
+        int[][][] nbTargetDetected = (int[][][]) data.get("nb_target_detected");
+        int[][][] distance = (int[][][]) data.get("distance");
+
+        // Check and zero out distance if nb_target_detected has zero in the third dimension
+        if (nbTargetDetected != null && distance != null) {
+            for (int i = 0; i < nbTargetDetected.length; i++) {
+                for (int j = 0; j < nbTargetDetected[i].length; j++) {
+                    // If the third dimension of nb_target_detected is 0, zero out corresponding distance values
+                    if (nbTargetDetected[i][j][0] == 0) {
+                        // make the distance 0
+                        Arrays.fill(distance[i][j], 0);
+                    }
+                }
             }
         }
 
@@ -319,7 +335,6 @@ public class Threads {
      * @param shape shape array
      * @return Object */
     private int[][][] reshape(int[] data, int[] shape) {
-        //System.out.println("Reshape: " + Arrays.toString(shape));
         int rows = shape[0];
         int cols = shape[1];
         int depth = shape[2];
@@ -365,28 +380,5 @@ public class Threads {
             }
         }
         return items;
-    }
-
-    /** Print the parser dictionary
-     * @param items parser dictionary */
-    public void printParser(Map<String, Object[]>  items) {
-        System.out.println("Parser: {");
-        for (Map.Entry<String, Object[]> entry : items.entrySet()) {
-            String key = entry.getKey();
-            Object[] value = entry.getValue();
-
-            System.out.print("  '" + key + "': [");
-            for (int i = 0; i < value.length; i++) {
-                if (i == 0)
-                    System.out.print(value[i] + ", ");
-                else if (i == 1){
-                    int[] nums = (int[]) value[i];
-                    System.out.print(Arrays.toString(nums) + ", ");
-                } else
-                    System.out.print(value[i] + "]");
-            }
-            System.out.println();
-        }
-        System.out.println("}");
     }
 }

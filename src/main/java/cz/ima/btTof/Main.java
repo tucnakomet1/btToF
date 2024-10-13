@@ -42,8 +42,17 @@ public class Main {
 
         // start the ToF sensor stream
         TofFunc func = new TofFunc(port);
-
         Scanner scanner = new Scanner(System.in);
+
+        askForChoice(func, scanner);
+    }
+
+    /**
+     * Ask the user for the server choice
+     * @param func ToF sensor function
+     * @param scanner scanner for user input
+     */
+    private static void askForChoice(TofFunc func, Scanner scanner) {
         System.out.println("Do you want to use Bluetooth server or LAN server? [bt / lan]:");
         String choice = scanner.nextLine();
 
@@ -52,7 +61,8 @@ public class Main {
         } else if (choice.equalsIgnoreCase("lan")) {
             new LanServer(func);
         } else {
-            System.out.println("Neplatná volba. Prosím, zadejte 'BT' nebo 'LAN'.");
+            System.out.println("Invalid choice. Please enter 'BT' or 'LAN'.\n\n");
+            askForChoice(func, scanner);
         }
         scanner.close();
     }

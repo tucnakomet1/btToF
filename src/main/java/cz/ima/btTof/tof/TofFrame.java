@@ -74,6 +74,7 @@ public class TofFrame {
                 firstTargets[i][j] = distances[i][j][0];
             }
         }
+
         return firstTargets;
     }
 }

@@ -47,7 +47,8 @@ public class WriteJson {
         JSONObject jsonObject = new JSONObject(config);
 
         for (String key : jsonObject.keySet()) {
-            updateConfig("config.json", key, jsonObject.get(key).toString());
+            String value = key.equals("nb_target_detected") ? "on" : jsonObject.get(key).toString();    // always set nb_target_detected to "on"
+            updateConfig("config.json", key, value);
         }
     }
 
