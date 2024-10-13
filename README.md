@@ -38,7 +38,7 @@ Used libraries:
 <a name="downjar"></a>
 ### Download jar file from releases
 
-Download the latest [release](https://gitlab.mff.cuni.cz/teaching/nprg045/hnetynka/2024-velicka/-/releases/1.0) of the mobile app ([`.app`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/ba3a8ea0a938573d7a6e67517bb676d0/btToF.apk)) and [`.tar.gz`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/b894906eecb50a31942248f52873adef/btTof_v1.0.tar.gz) file.
+Download the latest [release](https://gitlab.mff.cuni.cz/teaching/nprg045/hnetynka/2024-velicka/-/releases/1.0) of the mobile app ([`.app`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/ba3a8ea0a938573d7a6e67517bb676d0/btToF.apk)) and [`.tar.gz`](https://gitlab.mff.cuni.cz/-/project/14769/uploads/b3ab7a3a05b07dc1111446919917bb0c/btTof_v1.0.tar.gz) file.
 
 ```bash
 tar -xvzf btTof_v1.0.tar.gz
